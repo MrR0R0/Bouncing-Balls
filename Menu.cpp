@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "TextureManager.h"
+#include "FileManager.h"
 #include "Paths.h"
 
 SDL_Color white = {255, 255, 255};
@@ -8,6 +9,13 @@ SDL_Color cyan = {127,255,212};
 void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h) {
     rect.x = x - w/2;
     rect.y = y - h/2;
+    rect.w = w;
+    rect.h = h;
+}
+
+void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h){
+    rect.x = x;
+    rect.y = y;
     rect.w = w;
     rect.h = h;
 }
@@ -256,6 +264,27 @@ void SoundMenu::loadMusic(const char *path) {
     Mix_PlayMusic(Game::music, -1);
 }
 
+void ScoreMenu::setScores(const char* path) {
+    int max_char = 10;
+    std::string name;
+    scores = FileManager::getTopTen(path);
+    for(int i=0; i<std::min((int)scores.size(), max_char); i++){
+        name = scores[i].second;
+        if(scores[i].second.size()>10) name = scores[i].second.substr(0, max_char) + "...";
+        setRectWithCenter(scoresRect[i], 450, 50*(i+6), std::to_string(scores[i].first).size()*15, 50);
+        scoresMessage[i] = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, std::to_string(scores[i].first).c_str(), white);
+        setRectWithCorner(namesRect[i], 100, 50 * (i + 6) - 25, (int)(name.size() + 2) * 15, 50);
+        namesMessage[i] = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, (std::to_string(i + 1) + ". " + name).c_str(), white);
+    }
+}
+
+void ScoreMenu::renderScores(){
+    for(int i=0; i<scores.size(); i++){
+        SDL_RenderCopy(Game::renderer, scoresMessage[i], nullptr, &scoresRect[i]);
+        SDL_RenderCopy(Game::renderer, namesMessage[i], nullptr, &namesRect[i]);
+    }
+}
+
 void ScoreMenu::init(){
     setRectWithCenter(scoreRect, 300, 100, 250, 70);
     setRectWithCenter(infinityRect, 120, 200, 100, 50);
@@ -264,9 +293,10 @@ void ScoreMenu::init(){
     setRectWithCenter(backRect, 50, 50, 50, 50);
     infinityMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "infinity", white);
     randomMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "random", white);
+    countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "countdown", cyan);
     scoreMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 28, "Highest Scores", white);
-    countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "countdown", white);
     backPic = TextureManager::LoadTexture(backPicPath);
+    setScores(countdownScoresPath);
 }
 
 void ScoreMenu::render(){
@@ -275,6 +305,7 @@ void ScoreMenu::render(){
     SDL_RenderCopy(Game::renderer, randomMessage, nullptr, &randomRect);
     SDL_RenderCopy(Game::renderer, scoreMessage, nullptr, &scoreRect);
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
+    renderScores();
 }
 
 void ScoreMenu::handleEvents(SDL_Event event){
@@ -287,6 +318,23 @@ void ScoreMenu::handleEvents(SDL_Event event){
             SDL_GetMouseState(&x_mouse, &y_mouse);
             if(pointInRect(backRect, x_mouse, y_mouse)){
                 Game::menuMode = Main;
+            }
+            else if(pointInRect(randomRect, x_mouse, y_mouse)){
+                setScores(randomScoresPath);
+                infinityMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "infinity", white);
+                randomMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "random", cyan);
+                countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "countdown", white);
+            }
+            else if(pointInRect(infinityRect, x_mouse, y_mouse)){
+                setScores(infinityScoresPath);
+                infinityMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "infinity", cyan);
+                randomMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "random", white);
+                countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "countdown", white);            }
+            else if(pointInRect(countdownRect, x_mouse, y_mouse)){
+                setScores(countdownScoresPath);
+                infinityMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "infinity", white);
+                randomMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "random", white);
+                countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "countdown", cyan);
             }
             break;
         default:

@@ -4,6 +4,7 @@
 #include "Game.h"
 
 void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h);
+void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h);
 bool pointInRect(SDL_Rect rect, int x, int y);
 
 class MainMenu{
@@ -40,7 +41,7 @@ class SoundMenu{
         void init();
         void render();
         void handleEvents(SDL_Event event);
-        void loadMusic(const char *path);
+        static void loadMusic(const char *path);
         SDL_Rect soundBarRect, soundMessageRect, soundRect, theme1Rect, theme2Rect, theme3Rect, musicRect, backRect;
         SDL_Texture *soundMessage, *theme1Message, *theme2Message, *theme3Message, *musicMessage, *backPic;
 };
@@ -50,7 +51,11 @@ class ScoreMenu{
         void init();
         void render();
         void handleEvents(SDL_Event event);
-        SDL_Rect scoreRect, infinityRect, countdownRect, randomRect, backRect;
-        SDL_Texture *scoreMessage, *infinityMessage, *countdownMessage, *randomMessage, *backPic;
+        void setScores(const char* path);
+        void renderScores();
+        SDL_Rect scoreRect, infinityRect, countdownRect, randomRect, backRect, namesRect[10], scoresRect[10];
+        SDL_Texture *scoreMessage, *infinityMessage, *countdownMessage, *randomMessage, *backPic, *namesMessage[10], *scoresMessage[10];
+    private:
+        std::vector<std::pair<unsigned int, std::string>> scores;
 };
 #endif //BOUNCINGBALLS_MENU_H

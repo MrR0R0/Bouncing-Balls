@@ -10,3 +10,6 @@ const char* backPicPath = "..\\assets\\back_arrow.png";
 const char* music1Path = "..\\assets\\ice_dance.mp3";
 const char* music2Path = "..\\assets\\mario.mp3";
 const char* music3Path = "..\\assets\\castle.mp3";
+const char* countdownScoresPath = "..\\scores\\countdown.txt";
+const char* infinityScoresPath = "..\\scores\\infinity.txt";
+const char* randomScoresPath = "..\\scores\\random.txt";
