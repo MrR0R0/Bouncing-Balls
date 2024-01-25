@@ -1,4 +1,0 @@
-"E:\Programs\CLion\CLion 2023.3.1\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=E:/Programs/CLion/CLion 2023.3.1/bin/ninja/win/x64/ninja.exe" -G Ninja -S E:\Codes\project\BouncingBalls -B E:\Codes\project\BouncingBalls\cmake-build-debug
--- Configuring done (0.1s)
--- Generating done (0.0s)
--- Build files have been written to: E:/Codes/project/BouncingBalls/cmake-build-debug

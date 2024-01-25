@@ -1,3 +1,0 @@
-E:/Codes/project/BouncingBalls/cmake-build-debug/CMakeFiles/BouncingBalls.dir
-E:/Codes/project/BouncingBalls/cmake-build-debug/CMakeFiles/edit_cache.dir
-E:/Codes/project/BouncingBalls/cmake-build-debug/CMakeFiles/rebuild_cache.dir
