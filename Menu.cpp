@@ -20,7 +20,7 @@ void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h){
     rect.h = h;
 }
 
-bool pointInRect(SDL_Rect rect, int x, int y) {
+bool pointInRect(SDL_Rect rect, int &x, int &y) {
     if((x >= rect.x && x <= rect.x+rect.w) && (y >= rect.y && y <= rect.y+rect.h))
         return true;
     return false;
@@ -31,13 +31,13 @@ void MainMenu::init(){
     setRectWithCenter(startRect, 300, 250, 100, 50);
     setRectWithCenter(modeRect, 300, 400, 100, 50);
     setRectWithCenter(scoreRect, 300, 550, 180, 50);
-    setRectWithCenter(audioRect, 500, 700, 64, 64);
+    setRectWithCenter(soundMenuRect, 500, 700, 64, 64);
     setRectWithCenter(settingRect, 100, 700, 64, 64);
     titleMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 30, "Bouncing Balls", cyan);
     startMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Start!", white);
     modeMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Modes", white);
     scoreMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Score Board", white);
-    audioPic = TextureManager::LoadTexture("..\\assets\\speaker.jpg");
+    soundMenuPic = TextureManager::LoadTexture(soundMenuPicPath);
     settingPic = TextureManager::LoadTexture("..\\assets\\cog.png");
 }
 
@@ -46,7 +46,7 @@ void MainMenu::render(){
     SDL_RenderCopy(Game::renderer, startMessage, nullptr, &startRect);
     SDL_RenderCopy(Game::renderer, modeMessage, nullptr, &modeRect);
     SDL_RenderCopy(Game::renderer, scoreMessage, nullptr, &scoreRect);
-    SDL_RenderCopy(Game::renderer, audioPic, nullptr, &audioRect);
+    SDL_RenderCopy(Game::renderer, soundMenuPic, nullptr, &soundMenuRect);
     SDL_RenderCopy(Game::renderer, settingPic, nullptr, &settingRect);
     SDL_SetRenderDrawColor(Game::renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(Game::renderer, &startRect);
@@ -71,7 +71,7 @@ void MainMenu::handleEvents(SDL_Event event) {
                 Game::menuMode = Modes;
             else if(pointInRect(settingRect, x_mouse, y_mouse))
                 Game::menuMode = Settings;
-            else if(pointInRect(audioRect, x_mouse, y_mouse))
+            else if(pointInRect(soundMenuRect, x_mouse, y_mouse))
                 Game::menuMode = Sound;
             break;
         default:
@@ -80,20 +80,20 @@ void MainMenu::handleEvents(SDL_Event event) {
 }
 
 void ModeMenu::init(){
-    setRectWithCenter(countdownRect, 300, 250, 150, 50);
-    setRectWithCenter(randomRect, 300, 350, 100, 50);
-    setRectWithCenter(infinityRect, 300, 450, 100, 50);
+    setRectWithCenter(countdownRect, 300, 250, 9*20, 50);
+    setRectWithCenter(randomRect, 300, 400, 6*20, 50);
+    setRectWithCenter(infinityRect, 300, 550, 8*20, 50);
     setRectWithCenter(backRect, 100, 100, 64, 64);
-    countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Countdown", white);
-    randomMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Random", white);
-    infinityPic = TextureManager::LoadTexture("..\\assets\\infinity_sign.png");
+    countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Countdown", white);
+    randomMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Random", cyan);
+    infinityMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Infinity", white);
     backPic = TextureManager::LoadTexture(backPicPath);
 }
 
 void ModeMenu::render(){
     SDL_RenderCopy(Game::renderer, countdownMessage, nullptr, &countdownRect);
     SDL_RenderCopy(Game::renderer, randomMessage, nullptr, &randomRect);
-    SDL_RenderCopy(Game::renderer, infinityPic, nullptr, &infinityRect);
+    SDL_RenderCopy(Game::renderer, infinityMessage, nullptr, &infinityRect);
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
     SDL_SetRenderDrawColor(Game::renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(Game::renderer, &infinityRect);
@@ -113,13 +113,22 @@ void ModeMenu::handleEvents(SDL_Event event) {
             if(pointInRect(backRect, x_mouse, y_mouse))
                 Game::menuMode = Main;
             else if(pointInRect(countdownRect, x_mouse, y_mouse)) {
-                Game::gameMode = "countdown";
+                Game::gameMode = Countdown;
+                countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Countdown", cyan);
+                randomMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Random", white);
+                infinityMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Infinity", white);
             }
             else if(pointInRect(infinityRect, x_mouse, y_mouse)) {
-                Game::gameMode = "infinity";
+                Game::gameMode = Infinity;
+                countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Countdown", white);
+                randomMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Random", white);
+                infinityMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Infinity", cyan);
             }
             else if(pointInRect(randomRect, x_mouse, y_mouse)) {
-                Game::gameMode = "random";
+                Game::gameMode = Random;
+                countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Countdown", white);
+                randomMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Random", cyan);
+                infinityMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Infinity", white);
             }
             break;
         default:
@@ -192,21 +201,24 @@ void SettingsMenu::handleEvents(SDL_Event event){
 }
 
 void SoundMenu::init() {
-    setRectWithCenter(theme1Rect, 100, 600, 50, 50);
-    setRectWithCenter(theme2Rect, 300, 600, 50, 50);
-    setRectWithCenter(theme3Rect, 500, 600, 50, 50);
-    setRectWithCenter(musicRect, 300, 450, 50, 50);
-    setRectWithCenter(soundBarRect, 300, 300, 200, 50);
-    setRectWithCenter(soundRect,  300, 300, 200, 50);
-    setRectWithCenter(soundMessageRect, 300, 200, 200, 50);
+    setRectWithCenter(theme1Rect, 100, 600, 120, 50);
+    setRectWithCenter(theme2Rect, 300, 600, 100, 50);
+    setRectWithCenter(theme3Rect, 500, 600, 100, 50);
+    setRectWithCenter(musicRect, 300, 450, 100, 50);
+    setRectWithCenter(soundBarRect, 250, 300, 200, 50);
+    setRectWithCenter(soundRect,  250, 300, 200, 50);
+    setRectWithCenter(speakerRect, 450, 300, 50, 50);
+    setRectWithCenter(soundMessageRect, 300, 150, 150, 50);
     setRectWithCenter(backRect, 50, 50, 50, 50);
-    soundMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Sound", white);
-    musicMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Music", white);
-    theme1Message = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Mario", white);
-    theme2Message = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "...", white);
-    theme3Message = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "...", white);
+    soundMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 28, "Sound", white);
+    musicMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 28, "Music", white);
+    theme1Message = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Ice Dance", white);
+    theme2Message = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Mario", white);
+    theme3Message = TextureManager::LoadFont("..\\fonts\\comic.ttf", 24, "Castle", white);
+    speakerPic = TextureManager::LoadTexture(unmutePicPath);
     backPic = TextureManager::LoadTexture(backPicPath);
     loadMusic("..\\assets\\ice_dance.mp3");
+    isMute = false;
 }
 
 void SoundMenu::render(){
@@ -215,6 +227,7 @@ void SoundMenu::render(){
     SDL_RenderCopy(Game::renderer, theme2Message, nullptr, &theme2Rect);
     SDL_RenderCopy(Game::renderer, theme3Message, nullptr, &theme3Rect);
     SDL_RenderCopy(Game::renderer, soundMessage, nullptr, &soundMessageRect);
+    SDL_RenderCopy(Game::renderer, speakerPic, nullptr, &speakerRect);
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
     SDL_SetRenderDrawColor(Game::renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(Game::renderer, &theme1Rect);
@@ -236,6 +249,7 @@ void SoundMenu::handleEvents(SDL_Event event){
             SDL_GetMouseState(&x_mouse, &y_mouse);
             if(pointInRect(soundRect, x_mouse, y_mouse)) {
                 soundBarRect.w = x_mouse - soundRect.x;
+                prevVolume = soundBarRect.w;
                 Mix_VolumeMusic((int)(x_mouse - soundRect.x)*128.0/soundRect.w);
             }
             else if(pointInRect(backRect, x_mouse, y_mouse)){
@@ -249,6 +263,22 @@ void SoundMenu::handleEvents(SDL_Event event){
             }
             else if(pointInRect(theme3Rect, x_mouse, y_mouse)) {
                 loadMusic(music3Path);
+            }
+            else if(pointInRect(speakerRect, x_mouse, y_mouse)) {
+                if(isMute){
+                    speakerPic = TextureManager::LoadTexture(unmutePicPath);
+                    isMute = false;
+                    soundBarRect.w = prevVolume;
+                    Mix_ResumeMusic();
+                    Mix_VolumeMusic((int)(soundBarRect.w)*128.0/soundRect.w);
+                }
+                else{
+                    speakerPic = TextureManager::LoadTexture(mutePicPath);
+                    isMute = true;
+                    prevVolume = soundBarRect.w;
+                    soundBarRect.w = 0;
+                    Mix_PauseMusic();
+                }
             }
             break;
         default:

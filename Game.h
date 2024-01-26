@@ -13,6 +13,7 @@
 #include <string>
 
 enum menuModes{Main, Modes, Settings, Sound, Score, Start};
+enum gameModes{Infinity, Random, Countdown};
 
 class Game{
     public:
@@ -25,10 +26,9 @@ class Game{
         void clean();
         static SDL_Texture *background;
         static SDL_Renderer *renderer;
-        //static std::string mode;
         static menuModes menuMode;
         static bool isRunning;
-        static std::string gameMode;
+        static gameModes gameMode;
         static Mix_Music *music;
 
     private:

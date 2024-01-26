@@ -5,15 +5,15 @@
 
 void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h);
 void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h);
-bool pointInRect(SDL_Rect rect, int x, int y);
+bool pointInRect(SDL_Rect rect, int &x, int &y);
 
 class MainMenu{
     public:
         void init();
         void render();
         void handleEvents(SDL_Event event);
-        SDL_Rect startRect, modeRect, scoreRect, settingRect, audioRect, titleRect;
-        SDL_Texture *startMessage, *modeMessage, *scoreMessage, *settingPic, *audioPic, *titleMessage;
+        SDL_Rect startRect, modeRect, scoreRect, settingRect, soundMenuRect, titleRect;
+        SDL_Texture *startMessage, *modeMessage, *scoreMessage, *settingPic, *soundMenuPic, *titleMessage;
 };
 
 class ModeMenu{
@@ -22,7 +22,7 @@ class ModeMenu{
         void render();
         void handleEvents(SDL_Event event);
         SDL_Rect countdownRect, randomRect, infinityRect, backRect;
-        SDL_Texture *countdownMessage, *randomMessage, *infinityPic, *backPic;
+        SDL_Texture *countdownMessage, *randomMessage, *infinityMessage, *backPic;
 };
 
 class SettingsMenu{
@@ -42,8 +42,10 @@ class SoundMenu{
         void render();
         void handleEvents(SDL_Event event);
         static void loadMusic(const char *path);
-        SDL_Rect soundBarRect, soundMessageRect, soundRect, theme1Rect, theme2Rect, theme3Rect, musicRect, backRect;
-        SDL_Texture *soundMessage, *theme1Message, *theme2Message, *theme3Message, *musicMessage, *backPic;
+        bool isMute;
+        int prevVolume;
+        SDL_Rect soundBarRect, soundMessageRect, soundRect, theme1Rect,theme2Rect, theme3Rect, musicRect, backRect, speakerRect;
+        SDL_Texture *soundMessage, *theme1Message, *theme2Message, *theme3Message, *musicMessage, *backPic, *speakerPic;
 };
 
 class ScoreMenu{

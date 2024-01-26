@@ -13,3 +13,6 @@ const char* music3Path = "..\\assets\\castle.mp3";
 const char* countdownScoresPath = "..\\scores\\countdown.txt";
 const char* infinityScoresPath = "..\\scores\\infinity.txt";
 const char* randomScoresPath = "..\\scores\\random.txt";
+const char* soundMenuPicPath = "..\\assets\\note.jpg";
+const char* mutePicPath = "..\\assets\\mute_speaker.jpg";
+const char* unmutePicPath = "..\\assets\\speaker.jpg";

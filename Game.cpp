@@ -14,9 +14,9 @@ SDL_Rect destR;
 
 SDL_Renderer *Game::renderer = nullptr;
 SDL_Texture *Game::background = nullptr;
-menuModes Game::menuMode = Score;
+menuModes Game::menuMode = Sound;
 bool Game::isRunning = true;
-std::string Game::gameMode = "random";
+gameModes Game::gameMode = Random;
 Mix_Music *Game::music = Mix_LoadMUS("..\\assets\\ice_dance.mp3");
 
 Game::Game(){}
