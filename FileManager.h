@@ -5,7 +5,7 @@
 
 class FileManager{
     public:
-        static void addScore(const char *path, std::string &name, unsigned int score);
+        static void addScore(const char *path, const std::string &name, unsigned int score);
         static std::vector<std::pair<unsigned int, std::string>> getTopTen(const char *path);
 };
 

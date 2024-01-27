@@ -11,11 +11,13 @@ SettingsMenu settingsMenu;
 SoundMenu soundMenu;
 ScoreMenu scoreMenu;
 PlayMenu playMenu;
+EndMenu endMenu;
 SDL_Rect destR;
 
 SDL_Renderer *Game::renderer = nullptr;
 SDL_Texture *Game::background = nullptr;
 bool Game::isRunning = true;
+unsigned int Game::score=0;
 gameModes Game::gameMode = Random;
 ballThemes Game::ballTheme = Glass;
 Mix_Music *Game::music = Mix_LoadMUS("..\\assets\\ice_dance.mp3");
@@ -41,12 +43,12 @@ bool pointInRect(SDL_Rect rect, int &x, int &y) {
     return false;
 }
 
-
 Game::Game(){}
 
 Game::~Game(){}
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height){
+    menuQueue.push_back(End);
     if(SDL_Init(SDL_INIT_EVERYTHING) == 0){
         cout << "Subsys initialized" << endl;
         window = SDL_CreateWindow(title, xpos, ypos, width, height, 0);
@@ -67,12 +69,14 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height){
     backgroundRect.h = 800;
     background = TextureManager::LoadTexture(theme1Path);
     TTF_Init();
+    SDL_StartTextInput();
     mainMenu.init();
     modesMenu.init();
     settingsMenu.init();
     soundMenu.init();
     scoreMenu.init();
     playMenu.init();
+    endMenu.init();
 }
 
 menuModes Game::lastMenu() {
@@ -104,6 +108,9 @@ void Game::handleEvents() {
         case Play:
             playMenu.handleEvents(event);
             break;
+        case End:
+            endMenu.handleEvents(event);
+            break;
     }
 }
 
@@ -111,6 +118,8 @@ void Game::update(){
     switch(lastMenu()){
         case Play:
             playMenu.update();
+        case End:
+            endMenu.update();
     }
 }
 
@@ -136,6 +145,9 @@ void Game::render() {
         case Play:
             playMenu.render();
             break;
+        case End:
+            endMenu.render();
+            break;
     }
     SDL_RenderPresent(renderer);
 }
@@ -143,8 +155,10 @@ void Game::render() {
 void Game::clean() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
+    SDL_StopTextInput();
     Mix_FreeMusic(music);
     Mix_CloseAudio();
+    TTF_Quit();
     Mix_Quit();
     SDL_Quit();
     cout << "Game Cleaned!" << endl;

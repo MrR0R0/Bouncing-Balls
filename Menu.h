@@ -4,6 +4,8 @@
 #include "Game.h"
 #include "Map.h"
 
+enum endMenuMode{Write, Idle};
+
 class MainMenu{
     public:
         void init();
@@ -65,7 +67,25 @@ class PlayMenu{
         void handleEvents(SDL_Event event);
         void update();
         SDL_Rect backRect;
-        SDL_Texture *backPic;
+        SDL_Texture *backPic = nullptr;
         Map mp;
+};
+
+class EndMenu{
+    public:
+        void init();
+        void render();
+        void handleEvents(SDL_Event);
+        void update();
+        std::string makeValid(const std::string);
+        int index=0;
+        bool backspace=false, del=false, left=false, right=false, redirect=false;
+        std::string topText;
+        static std::string text, textCpy;
+        SDL_Rect textRect, fullTextRect, tickRect, topRect, enterNameRect, warningRect, redirectRect;
+        SDL_Texture *textMessage, *tickPic, *topMessage, *enterNameMessage, *warningMessage, *redirectMessage;
+        const Uint8 *keystates;
+        endMenuMode endMode;
+
 };
 #endif //BOUNCINGBALLS_MENU_H

@@ -6,6 +6,8 @@
 SDL_Color white = {255, 255, 255};
 SDL_Color cyan = {127,255,212};
 
+std::string EndMenu::text, EndMenu::textCpy;
+
 void MainMenu::init(){
     setRectWithCenter(titleRect, 300, 100, 300, 80);
     setRectWithCenter(startRect, 300, 250, 100, 50);
@@ -271,7 +273,6 @@ void SoundMenu::loadMusic(const char *path) {
     Game::music = Mix_LoadMUS(path);
     if(Game::music == nullptr)
         std::cout << "Failed to load the music!\n";
-    Mix_PlayMusic(Game::music, -1);
 }
 
 void ScoreMenu::setScores(const char* path) {
@@ -382,4 +383,171 @@ void PlayMenu::handleEvents(SDL_Event event) {
 
 void PlayMenu::update(){
     mp.update();
+}
+
+void EndMenu::init() {
+    topText = "It's over!";
+    text="";
+    setRectWithCorner(fullTextRect, 50, 300, 21*20, 50);
+    setRectWithCorner(enterNameRect, 50, 250, 220, 50);
+    setRectWithCenter(topRect, 300, 100, topText.length()*25, 75);
+    setRectWithCorner(tickRect, 500, 300, 50, 50);
+    setRectWithCorner(warningRect, 50, 450, 500, 40);
+    tickPic = TextureManager::LoadTexture("..\\assets\\tick_icon.png");
+    topMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 28, topText.c_str(), cyan);
+    enterNameMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 28, "Enter Your Name:", white);
+    warningMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 20, "*Number of letters should be below 5 and over 19",
+                                                {255, 0, 0});
+    endMode = Idle;
+}
+
+void EndMenu::render(){
+    SDL_RenderCopy(Game::renderer, tickPic, nullptr, &tickRect);
+    SDL_RenderCopy(Game::renderer, enterNameMessage, nullptr, &enterNameRect);
+    SDL_RenderCopy(Game::renderer, topMessage, nullptr, &topRect);
+    SDL_RenderCopy(Game::renderer, textMessage, nullptr, &textRect);
+    SDL_RenderCopy(Game::renderer, warningMessage, nullptr, &warningRect);
+    SDL_SetRenderDrawColor(Game::renderer, 255, 0, 0, 255);
+    SDL_RenderDrawRect(Game::renderer, &fullTextRect);
+    SDL_SetRenderDrawColor(Game::renderer, 255, 255, 255, 255);
+}
+
+void EndMenu::update() {
+    if(redirect){
+        text = makeValid(text);
+        if(text.length()>=5) {
+            setRectWithCenter(redirectRect, 300, 550, 300, 50);
+            redirectMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 28, "Your Score Was Stored :)",
+                                                       {128, 128, 0});
+            switch (Game::gameMode) {
+                case Random:
+                    FileManager::addScore(randomScoresPath, text, Game::score);
+                    break;
+                case Infinity:
+                    FileManager::addScore(infinityScoresPath, text, Game::score);
+                    break;
+                case Countdown:
+                    FileManager::addScore(countdownScoresPath, text, Game::score);
+                    break;
+                default:
+                    break;
+            }
+        }
+        else{
+            setRectWithCenter(redirectRect, 300, 550, 350, 50);
+            redirectMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 28, "Your Score Was not Stored :(",
+                                                       {128, 128, 0});
+        }
+        SDL_RenderCopy(Game::renderer, redirectMessage, nullptr, &redirectRect);
+        SDL_RenderPresent(Game::renderer);
+        SDL_Delay(2000);
+        Game::menuQueue.pop_back();
+        text="";
+    }
+}
+
+void EndMenu::handleEvents(SDL_Event event) {
+    int x_mouse, y_mouse;
+    keystates = SDL_GetKeyboardState(nullptr);
+    switch (event.type) {
+        case SDL_QUIT:
+            Game::isRunning = false;
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            SDL_GetMouseState(&x_mouse, &y_mouse);
+            if(pointInRect(tickRect, x_mouse, y_mouse)){
+                redirect = true;
+            }
+            else if(pointInRect(fullTextRect, x_mouse, y_mouse))
+                endMode = Write;
+            else
+                endMode = Idle;
+            break;
+        default:
+            break;
+    }
+    if(endMode==Write){
+        if(event.type == SDL_KEYUP){
+            if(left && index>0) {
+                left = false;
+                index--;
+            }
+            else if(right && index<text.length()){
+                right = false;
+                index++;
+            }
+            else if(index>0 && backspace){
+                text.erase(index-1, 1);
+                index--;
+                backspace=false;
+            }
+            else if(del && index<text.length()){
+                text.erase(index, 1);
+                del = false;
+            }
+        }
+        else if(event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+                case SDLK_BACKSPACE:
+                    if(text.length()>0)
+                        backspace = true;
+                    break;
+                case SDLK_LEFT:
+                    if(index>0)
+                        left = true;
+                    break;
+                case SDLK_RIGHT:
+                    if(index<text.length())
+                        right = true;
+                    break;
+                case SDLK_DELETE:
+                    if(index<text.length())
+                        del = true;
+                    break;
+            }
+        }
+        if(event.type == SDL_TEXTINPUT && text.length()<20){
+            text += event.text.text;
+            index++;
+        }
+        else if((keystates[SDL_SCANCODE_C] && SDL_GetModState()) && KMOD_CTRL)
+            SDL_SetClipboardText(text.c_str());
+        else if((keystates[SDL_SCANCODE_V] && SDL_GetModState()) && KMOD_CTRL) {
+            text = SDL_GetClipboardText();
+            text = text.substr(0, 20);
+            index = text.length();
+        }
+        if(text.length() >= 0) {
+            textCpy = text;
+            textCpy.insert(index, "_");
+            setRectWithCorner(textRect, 50 + 5, 300, textCpy.length() * 20, 50);
+            textMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, textCpy.c_str(), white);
+        }
+    }
+    else if(endMode == Idle){
+        if(text.length() >= 0) {
+            setRectWithCorner(textRect, 50 + 5, 300, text.length() * 20, 50);
+            textMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, text.c_str(), white);
+        }
+    }
+}
+
+std::string EndMenu::makeValid(const std::string str) {
+    int righInd, leftInd;
+    bool flag=true;
+    for(int i=0; i<str.length() && flag; i++)
+        if(str[i]!=' '){
+            flag = false;
+            leftInd = i;
+        }
+    flag = true;
+    for(int i=str.length()-1; i>=0 && flag; i--)
+        if(str[i]!=' '){
+            flag = false;
+            righInd = i;
+        }
+    if(righInd<leftInd)
+        return "";
+    return str.substr(leftInd, righInd-leftInd+1);
+
 }

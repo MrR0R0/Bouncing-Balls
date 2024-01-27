@@ -12,13 +12,11 @@
 #include <fstream>
 #include <string>
 
-
 void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h);
 void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h);
 bool pointInRect(SDL_Rect rect, int &x, int &y);
 
-
-enum menuModes{Main, Modes, Settings, Sound, Score, Play};
+enum menuModes{Main, Modes, Settings, Sound, Score, Play, End};
 enum gameModes{Infinity, Random, Countdown};
 enum ballThemes{Glass, Marble, Plastic};
 
@@ -39,6 +37,7 @@ class Game{
         menuModes lastMenu();
         static ballThemes ballTheme;
         static std::vector<menuModes> menuQueue;
+        static unsigned int score;
 
     private:
         SDL_Window* window;

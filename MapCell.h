@@ -7,7 +7,9 @@
 class Cell{
     public:
         void render();
-        int x_cent, y_cent, color;
+        double x_cent, y_cent;
+        int color;
+        bool empty=true;
         Ball *ball = new Ball;
 };
 
