@@ -2,10 +2,7 @@
 #ifndef BOUNCINGBALLS_MENU_H
 #define BOUNCINGBALLS_MENU_H
 #include "Game.h"
-
-void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h);
-void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h);
-bool pointInRect(SDL_Rect rect, int &x, int &y);
+#include "Map.h"
 
 class MainMenu{
     public:
@@ -59,5 +56,16 @@ class ScoreMenu{
         SDL_Texture *scoreMessage, *infinityMessage, *countdownMessage, *randomMessage, *backPic, *namesMessage[10], *scoresMessage[10];
     private:
         std::vector<std::pair<unsigned int, std::string>> scores;
+};
+
+class PlayMenu{
+    public:
+        void init();
+        void render();
+        void handleEvents(SDL_Event event);
+        void update();
+        SDL_Rect backRect;
+        SDL_Texture *backPic;
+        Map mp;
 };
 #endif //BOUNCINGBALLS_MENU_H

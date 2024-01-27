@@ -12,8 +12,15 @@
 #include <fstream>
 #include <string>
 
-enum menuModes{Main, Modes, Settings, Sound, Score, Start};
+
+void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h);
+void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h);
+bool pointInRect(SDL_Rect rect, int &x, int &y);
+
+
+enum menuModes{Main, Modes, Settings, Sound, Score, Play};
 enum gameModes{Infinity, Random, Countdown};
+enum ballThemes{Glass, Marble, Plastic};
 
 class Game{
     public:
@@ -26,10 +33,12 @@ class Game{
         void clean();
         static SDL_Texture *background;
         static SDL_Renderer *renderer;
-        static menuModes menuMode;
         static bool isRunning;
         static gameModes gameMode;
         static Mix_Music *music;
+        menuModes lastMenu();
+        static ballThemes ballTheme;
+        static std::vector<menuModes> menuQueue;
 
     private:
         SDL_Window* window;

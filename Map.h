@@ -3,19 +3,15 @@
 #define BOUNCINGBALLS_MAP_H
 
 #include "Game.h"
+#include "MapCell.h"
 
 class Map{
     public:
-    Map();
-    ~Map();
+        void LoadMap();
+        void render();
+        void update();
+        Cell *map = new Cell[400];
 
-    void LoadMap(int map[18][11]);
-    void DrawMap();
-
-    private:
-        SDL_Rect src, dest;
-        SDL_Texture* galaxy;
-        int map[20][25];
 };
 
 #endif //BOUNCINGBALLS_MAP_H

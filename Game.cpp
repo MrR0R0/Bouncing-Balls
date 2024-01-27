@@ -10,14 +10,37 @@ ModeMenu modesMenu;
 SettingsMenu settingsMenu;
 SoundMenu soundMenu;
 ScoreMenu scoreMenu;
+PlayMenu playMenu;
 SDL_Rect destR;
 
 SDL_Renderer *Game::renderer = nullptr;
 SDL_Texture *Game::background = nullptr;
-menuModes Game::menuMode = Sound;
 bool Game::isRunning = true;
 gameModes Game::gameMode = Random;
+ballThemes Game::ballTheme = Glass;
 Mix_Music *Game::music = Mix_LoadMUS("..\\assets\\ice_dance.mp3");
+vector<menuModes> Game::menuQueue;
+
+void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h) {
+    rect.x = x - w/2;
+    rect.y = y - h/2;
+    rect.w = w;
+    rect.h = h;
+}
+
+void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h){
+    rect.x = x;
+    rect.y = y;
+    rect.w = w;
+    rect.h = h;
+}
+
+bool pointInRect(SDL_Rect rect, int &x, int &y) {
+    if((x >= rect.x && x <= rect.x+rect.w) && (y >= rect.y && y <= rect.y+rect.h))
+        return true;
+    return false;
+}
+
 
 Game::Game(){}
 
@@ -49,12 +72,20 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height){
     settingsMenu.init();
     soundMenu.init();
     scoreMenu.init();
+    playMenu.init();
+}
+
+menuModes Game::lastMenu() {
+    if(!menuQueue.empty()){
+        return menuQueue.back();
+    }
+    return Main;
 }
 
 void Game::handleEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
-    switch(menuMode){
+    switch(lastMenu()){
         case Main:
             mainMenu.handleEvents(event);
             break;
@@ -70,17 +101,23 @@ void Game::handleEvents() {
         case Score:
             scoreMenu.handleEvents(event);
             break;
+        case Play:
+            playMenu.handleEvents(event);
+            break;
     }
 }
 
 void Game::update(){
-
+    switch(lastMenu()){
+        case Play:
+            playMenu.update();
+    }
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, background, nullptr, &backgroundRect);
-    switch(menuMode){
+    switch(lastMenu()){
         case Main:
             mainMenu.render();
             break;
@@ -96,6 +133,9 @@ void Game::render() {
         case Score:
             scoreMenu.render();
             break;
+        case Play:
+            playMenu.render();
+            break;
     }
     SDL_RenderPresent(renderer);
 }
@@ -103,6 +143,9 @@ void Game::render() {
 void Game::clean() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
+    Mix_FreeMusic(music);
+    Mix_CloseAudio();
+    Mix_Quit();
     SDL_Quit();
     cout << "Game Cleaned!" << endl;
 }

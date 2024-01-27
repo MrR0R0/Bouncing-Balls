@@ -6,26 +6,6 @@
 SDL_Color white = {255, 255, 255};
 SDL_Color cyan = {127,255,212};
 
-void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h) {
-    rect.x = x - w/2;
-    rect.y = y - h/2;
-    rect.w = w;
-    rect.h = h;
-}
-
-void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h){
-    rect.x = x;
-    rect.y = y;
-    rect.w = w;
-    rect.h = h;
-}
-
-bool pointInRect(SDL_Rect rect, int &x, int &y) {
-    if((x >= rect.x && x <= rect.x+rect.w) && (y >= rect.y && y <= rect.y+rect.h))
-        return true;
-    return false;
-}
-
 void MainMenu::init(){
     setRectWithCenter(titleRect, 300, 100, 300, 80);
     setRectWithCenter(startRect, 300, 250, 100, 50);
@@ -64,15 +44,15 @@ void MainMenu::handleEvents(SDL_Event event) {
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
             if(pointInRect(scoreRect, x_mouse, y_mouse))
-                Game::menuMode = Score;
+                Game::menuQueue.push_back(Score);
             else if(pointInRect(startRect, x_mouse, y_mouse))
-                Game::menuMode = Start;
+                Game::menuQueue.push_back(Play);
             else if(pointInRect(modeRect, x_mouse, y_mouse))
-                Game::menuMode = Modes;
+                Game::menuQueue.push_back(Modes);
             else if(pointInRect(settingRect, x_mouse, y_mouse))
-                Game::menuMode = Settings;
+                Game::menuQueue.push_back(Settings);
             else if(pointInRect(soundMenuRect, x_mouse, y_mouse))
-                Game::menuMode = Sound;
+                Game::menuQueue.push_back(Sound);
             break;
         default:
             break;
@@ -111,7 +91,7 @@ void ModeMenu::handleEvents(SDL_Event event) {
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
             if(pointInRect(backRect, x_mouse, y_mouse))
-                Game::menuMode = Main;
+                Game::menuQueue.pop_back();
             else if(pointInRect(countdownRect, x_mouse, y_mouse)) {
                 Game::gameMode = Countdown;
                 countdownMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 26, "Countdown", cyan);
@@ -183,7 +163,7 @@ void SettingsMenu::handleEvents(SDL_Event event){
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
             if(pointInRect(backRect, x_mouse, y_mouse)) {
-                Game::menuMode = Main;
+                Game::menuQueue.pop_back();
             }
             else if(pointInRect(theme1Rect, x_mouse, y_mouse)) {
                 Game::background = TextureManager::LoadTexture(theme1Path);
@@ -253,7 +233,7 @@ void SoundMenu::handleEvents(SDL_Event event){
                 Mix_VolumeMusic((int)(x_mouse - soundRect.x)*128.0/soundRect.w);
             }
             else if(pointInRect(backRect, x_mouse, y_mouse)){
-                Game::menuMode = Main;
+                Game::menuQueue.pop_back();
             }
             else if(pointInRect(theme1Rect, x_mouse, y_mouse)) {
                 loadMusic(music1Path);
@@ -347,7 +327,7 @@ void ScoreMenu::handleEvents(SDL_Event event){
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
             if(pointInRect(backRect, x_mouse, y_mouse)){
-                Game::menuMode = Main;
+                Game::menuQueue.pop_back();
             }
             else if(pointInRect(randomRect, x_mouse, y_mouse)){
                 setScores(randomScoresPath);
@@ -370,4 +350,36 @@ void ScoreMenu::handleEvents(SDL_Event event){
         default:
             break;
     }
+}
+
+void PlayMenu::init() {
+    setRectWithCenter(backRect, 25, 775, 50, 50);
+    backPic = TextureManager::LoadTexture(backPicPath);
+    mp.LoadMap();
+}
+
+void PlayMenu::render() {
+    SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
+    mp.render();
+}
+
+void PlayMenu::handleEvents(SDL_Event event) {
+    int x_mouse, y_mouse;
+    switch (event.type) {
+        case SDL_QUIT:
+            Game::isRunning = false;
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            SDL_GetMouseState(&x_mouse, &y_mouse);
+            if(pointInRect(backRect, x_mouse, y_mouse)){
+                Game::menuQueue.pop_back();
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void PlayMenu::update(){
+    mp.update();
 }

@@ -15,6 +15,10 @@ add_executable(BouncingBalls main.cpp
         Paths.h
         Paths.cpp
         FileManager.h
-        FileManager.cpp)
+        FileManager.cpp
+        Ball.cpp
+        Ball.h
+        MapCell.h
+        MapCell.cpp)
 
 target_link_libraries(BouncingBalls PRIVATE mingw32 SDL2main SDL2 SDL2_image SDL2_ttf SDL2_mixer)

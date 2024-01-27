@@ -17,5 +17,10 @@ extern const char* randomScoresPath;
 extern const char* soundMenuPicPath;
 extern const char* mutePicPath;
 extern const char* unmutePicPath;
+extern const char* blueBallPicPath;
+extern const char* redBallPicPath;
+extern const char* greenBallPicPath;
+extern const char* yellowBallPicPath;
+extern const char* purpleBallPicPath;
 
 #endif //BOUNCINGBALLS_PATHS_H
