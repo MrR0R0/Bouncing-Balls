@@ -8,9 +8,11 @@ class Cell{
     public:
         void render();
         double x_cent, y_cent;
-        int color;
         bool empty=true;
-        Ball *ball = new Ball;
+        Ball *ball;
+        void moveDown(double d);
+        void addBall(int);
+        void dropBall();
 };
 
 #endif //BOUNCINGBALLS_MAPCELL_H

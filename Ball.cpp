@@ -2,7 +2,7 @@
 #include "TextureManager.h"
 #include "Paths.h"
 
-void Ball::render(int x_cent, int y_cent){
+void Ball::render(){
     std::string path, child;
     if(color == 1) child = redBallPicPath;
     else if(color == 2) child = greenBallPicPath;
@@ -21,7 +21,11 @@ void Ball::render(int x_cent, int y_cent){
             break;
     }
     path += child;
-    setRectWithCenter(ballRect, x_cent, y_cent, 30, 30);
+    setRectWithCenter(ballRect, x_cent, y_cent, 60, 60);
     ballPic = TextureManager::LoadTexture(path.c_str());
     SDL_RenderCopy(Game::renderer, ballPic, nullptr, &ballRect);
+}
+
+void Ball::fall() {
+
 }

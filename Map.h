@@ -10,8 +10,10 @@ class Map{
         void LoadMap();
         void render();
         void update();
-        Cell *map = new Cell[400];
-
+        static std::vector<Ball*> fallingBalls;
+        std::vector<Ball*> fCop;
+        int initialY = -200;
+        Cell *map = new Cell[120];
 };
 
 #endif //BOUNCINGBALLS_MAP_H

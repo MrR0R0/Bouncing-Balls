@@ -374,6 +374,7 @@ void PlayMenu::handleEvents(SDL_Event event) {
             SDL_GetMouseState(&x_mouse, &y_mouse);
             if(pointInRect(backRect, x_mouse, y_mouse)){
                 Game::menuQueue.pop_back();
+                init();
             }
             break;
         default:
