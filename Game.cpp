@@ -48,7 +48,7 @@ Game::Game(){}
 Game::~Game(){}
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height){
-    menuQueue.push_back(Main);
+    menuQueue.push_back(Play);
     if(SDL_Init(SDL_INIT_EVERYTHING) == 0){
         cout << "Subsys initialized" << endl;
         window = SDL_CreateWindow(title, xpos, ypos, width, height, 0);

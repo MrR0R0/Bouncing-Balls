@@ -11,6 +11,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <time.h>
 
 void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h);
 void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h);

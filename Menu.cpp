@@ -273,6 +273,7 @@ void SoundMenu::loadMusic(const char *path) {
     Game::music = Mix_LoadMUS(path);
     if(Game::music == nullptr)
         std::cout << "Failed to load the music!\n";
+    Mix_PlayMusic(Game::music, -1);
 }
 
 void ScoreMenu::setScores(const char* path) {
@@ -373,6 +374,7 @@ void PlayMenu::handleEvents(SDL_Event event) {
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
             if(pointInRect(backRect, x_mouse, y_mouse)){
+                mp.destroy();
                 Game::menuQueue.pop_back();
                 init();
             }

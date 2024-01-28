@@ -6,10 +6,11 @@
 
 class Cell{
     public:
-        void render();
         double x_cent, y_cent;
         bool empty=true;
         Ball *ball;
+        void render();
+        void destroy();
         void moveDown(double d);
         void addBall(int);
         void dropBall();

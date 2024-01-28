@@ -15,13 +15,22 @@ void Cell::render(){
 }
 
 void Cell::dropBall() {
-    empty = true;
-    Map::fallingBalls.push_back(ball);
-    ball = new Ball;
+    if(!empty) {
+        empty = true;
+        Map::fallingBalls.emplace_back(ball);
+        ball = nullptr;
+    }
 }
 
 void Cell::moveDown(double d) {
     if(!empty)
         ball->y_cent += d;
     y_cent += d;
+}
+
+void Cell::destroy() {
+    if(!empty){
+        delete ball;
+        ball = nullptr;
+    }
 }

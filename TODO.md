@@ -14,8 +14,8 @@
 ### pause
 
 ## Game logic
-- [ ] creating a map
-- [ ] creating map cells
+- [x] creating a map
+- [x] creating map cells
 
 ## Elements and animations
 ### cannon
