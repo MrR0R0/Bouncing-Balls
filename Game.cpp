@@ -30,6 +30,13 @@ void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h) {
     rect.h = h;
 }
 
+void setRectWithCenter(SDL_Rect *rect, int x, int y, int w, int h) {
+    rect->x = x - w/2;
+    rect->y = y - h/2;
+    rect->w = w;
+    rect->h = h;
+}
+
 void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h){
     rect.x = x;
     rect.y = y;

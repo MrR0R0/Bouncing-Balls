@@ -2,6 +2,11 @@
 #include "TextureManager.h"
 #include "Paths.h"
 
+bool Ball::collision;
+SDL_Rect Ball::ballRectCopy;
+
+int Ball::cnst = 8;
+
 void Ball::render(){
     std::string path, child;
     if(color == 1) child = redBallPicPath;
@@ -29,4 +34,17 @@ void Ball::render(){
 void Ball::update() {
     x_cent += vx_cent;
     y_cent += vy_cent;
+}
+
+bool Ball::nextMoveCollisionWithCell(double xCentCell, double yCentCell) {
+    auto *cellRect = new SDL_Rect;
+    ballRectCopy = ballRect;
+    ballRectCopy.x += vx_cent;
+    ballRectCopy.y += vy_cent;
+    setRectWithCenter(ballRect, x_cent, y_cent, 60, 60);
+    setRectWithCenter(cellRect, xCentCell, yCentCell, 60, 60);
+    collision = SDL_HasIntersection(cellRect, &ballRect);
+    delete cellRect;
+    cellRect = nullptr;
+    return collision;
 }

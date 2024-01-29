@@ -17,7 +17,7 @@ void Map::LoadMap(){
                 map[iter].y_cent = 60 * row + 30 + initialY;
                 map[iter].vx_cent = 0;
                 map[iter].vy_cent = 0;
-                //map[iter].addBall(rand()%2+1);
+                map[iter].addBall(rand()%2+1);
             }
         }
     }
@@ -34,8 +34,10 @@ void Map::LoadMap(){
 }
 
 void Map::render() const{
-    for(int i=0; i < 120; i++)
-        map[i].render();
+    for(int i=0; i < 120; i++) {
+        if(inScreen(map[i].x_cent, map[i].y_cent))
+            map[i].render();
+    }
     for(auto &i : fallingBalls)
         i->render();
     for(auto &i : shootingBalls)
@@ -50,9 +52,27 @@ void Map::update() {
         i->update();
     }
     for(auto &i : shootingBalls){
-        i->update();
+        if(i->x_cent + i->vx_cent >= 600 - 30 - Ball::cnst/2){
+            i->x_cent = 600 - 30 - Ball::cnst/2;
+            i->vx_cent *= -1;
+        }
+        else if(i->x_cent + i->vx_cent <= 30 + Ball::cnst/2){
+            i->x_cent = 30 + Ball::cnst/2;
+            i->vx_cent *= -1;
+        }
+        else
+            i->update();
     }
     removeInvisibleBalls();
+    for(auto j : shootingBalls) {
+        for (int i = 0; i < 120; i++) {
+            if(inMap(i/10, i%10) && !map[i].empty) {
+                if (j->nextMoveCollisionWithCell(map[i].x_cent, map[i].y_cent) == SDL_TRUE) {
+                    j->color = 4;
+                }
+            }
+        }
+    }
 }
 
 void Map::destroy() {
@@ -64,8 +84,14 @@ void Map::destroy() {
         delete i;
         i = nullptr;
     }
+    for(auto &i : shootingBalls){
+        delete i;
+        i = nullptr;
+    }
     fallingBalls.clear();
     fallingBallsCopy.clear();
+    shootingBalls.clear();
+    shootingBallsCopy.clear();
 }
 
 bool Map::inMap(int x, int y) {
@@ -178,4 +204,10 @@ void Map::addShootingBall(const double &angle, SDL_Rect &cannonRect) {
     delete tmpAngle;
     tmpAngle = nullptr;
     shootingBalls.emplace_back(newBallPointer);
+}
+
+bool Map::inScreen(double &x, double &y) {
+    if(y>-40)
+        return true;
+    return false;
 }

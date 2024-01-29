@@ -360,6 +360,7 @@ void PlayMenu::setAngle(int &xMouse, int &yMouse){
     angle = 90 - atan(dy/dx) * 180 / M_PI;
     if(yMouse > cannonRect.y + cannonRect.h/2)
         angle = 90;
+    angle = angle > 70 ? 70 : angle;
     if(xMouse <= cannonRect.x + cannonRect.w/2) {
         angle *= -1;
     }
@@ -391,7 +392,7 @@ void PlayMenu::handleEvents(SDL_Event event) {
             if(pointInRect(backRect, x_mouse, y_mouse)){
                 mp.destroy();
                 Game::menuQueue.pop_back();
-                init();
+                mp.LoadMap();
             }
             else{
                 mp.addShootingBall(angle, cannonRect);

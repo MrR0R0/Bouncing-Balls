@@ -18,8 +18,9 @@ class Map{
         static std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
         void dropLooseBalls();
         static bool inMap(int x, int y);
+        static bool inScreen(double &x, double &y);
         static std::vector<Ball*> fallingBalls;
-        int initialY = 0;
+        int initialY = -400;
         Cell *map;
     private:
         std::set<std::pair<int, int>> sameColorNeighbors;
