@@ -3,6 +3,71 @@
 
 std::vector<Ball*> Map::fallingBalls;
 
+void Map::LoadMap(){
+    srand(time(nullptr));
+    int iter;
+    map = new Cell[120];
+    for(int row=0; row < 12; row++) {
+        for (int col = 0; col < 10; col++) {
+            if(inMap(row, col)){
+                iter = 10 * row + col;
+                map[iter].x_cent = 60 * col + 30;
+                if(row%2==0)
+                    map[iter].x_cent += 30;
+                map[iter].y_cent = 60 * row + 30 + initialY;
+                map[iter].vx_cent = 0;
+                map[iter].vy_cent = 0;
+                //map[iter].addBall(rand()%2+1);
+            }
+        }
+    }
+
+//    int xrand =  rand()%6+4;
+//    int yrand = rand()%9;
+//    //std::cout<< xrand << " " << yrand << std::endl;
+//    getSameColorNeighbors(xrand, yrand);
+//    for(auto i : sameColorNeighbors){
+//        map[i.first*10+i.second].dropBall();
+//    }
+//    sameColorNeighbors.clear();
+//    dropLooseBalls();
+}
+
+void Map::render() const{
+    for(int i=0; i < 120; i++)
+        map[i].render();
+    for(auto &i : fallingBalls)
+        i->render();
+    for(auto &i : shootingBalls)
+        i->render();
+}
+
+void Map::update() {
+    for(int i=0; i < 120; i++)
+        map[i].update();
+    for(auto &i : fallingBalls) {
+        i->vy_cent = 20 > i->vy_cent + acceleration ? i->vy_cent + acceleration : 20;
+        i->update();
+    }
+    for(auto &i : shootingBalls){
+        i->update();
+    }
+    removeInvisibleBalls();
+}
+
+void Map::destroy() {
+    for(int i=0; i<120; i++)
+        map[i].destroy();
+    delete[] map;
+    map = nullptr;
+    for(auto &i : fallingBalls){
+        delete i;
+        i = nullptr;
+    }
+    fallingBalls.clear();
+    fallingBallsCopy.clear();
+}
+
 bool Map::inMap(int x, int y) {
     if((x<12 && x>=0) && y>=0){
         if(x%2==0 && y<9)
@@ -41,7 +106,6 @@ void Map::getSameColorNeighbors(int x, int y){
             }
         }
     }
-    return;
 }
 
 void Map::getNonEmptyNeighbors(int x, int y){
@@ -53,7 +117,6 @@ void Map::getNonEmptyNeighbors(int x, int y){
             getNonEmptyNeighbors(i.first, i.second);
         }
     }
-    return;
 }
 
 void Map::dropLooseBalls(){
@@ -79,52 +142,7 @@ void Map::dropLooseBalls(){
     checkedBalls.clear();
 }
 
-void Map::LoadMap(){
-    srand(time(0));
-    int iter;
-    map = new Cell[120];
-    for(int row=0; row < 12; row++) {
-        for (int col = 0; col < 10; col++) {
-            iter = 10 * row + col;
-            map[iter].empty = false;
-            map[iter].x_cent = 60 * col + 30;
-            if(row%2==0){
-                map[iter].x_cent += 30;
-                if(col==9)
-                    map[iter].empty = true;
-            }
-            map[iter].y_cent = 60 * row + 30 + initialY;
-            map[iter].addBall(rand()%2+1);
-        }
-    }
-
-//    int xrand =  rand()%6+4;
-//    int yrand = rand()%9;
-//    std::cout<< xrand << " " << yrand << std::endl;
-//    getSameColorNeighbors(xrand, yrand);
-//    for(auto i : sameColorNeighbors){
-//        map[i.first*10+i.second].dropBall();
-//    }
-//    sameColorNeighbors.clear();
-    dropLooseBalls();
-}
-
-void Map::render(){
-    for(int i=0; i < 120; i++)
-        map[i].render();
-    for(auto i : fallingBalls) {
-        i->render();
-    }
-}
-
-void Map::update() {
-    for(int i=0; i < 120; i++){
-        map[i].moveDown(0.5);
-    }
-    speed = 20 > speed +acceleration ? speed + acceleration : 20;
-    for(auto &i : fallingBalls) {
-        i->y_cent += speed;
-    }
+void Map::removeInvisibleBalls() {
     for(auto &i : fallingBalls){
         if(i->y_cent>840){
             delete i;
@@ -135,17 +153,29 @@ void Map::update() {
     }
     fallingBalls = fallingBallsCopy;
     fallingBallsCopy.clear();
+
+    for(auto &i : shootingBalls){
+        if(i->x_cent < -40 || i->x_cent > 640){
+            delete i;
+            i = nullptr;
+        }
+        else
+            shootingBallsCopy.emplace_back(i);
+    }
+    shootingBalls = shootingBallsCopy;
+    shootingBallsCopy.clear();
 }
 
-void Map::destroy() {
-    for(int i=0; i<120; i++)
-        map[i].destroy();
-    delete[] map;
-    map = nullptr;
-    for(int i=0; i<fallingBalls.size(); i++){
-        delete fallingBalls[i];
-        fallingBalls[i] = nullptr;
-    }
-    fallingBalls.clear();
-    fallingBallsCopy.clear();
+void Map::addShootingBall(const double &angle, SDL_Rect &cannonRect) {
+    Ball *newBallPointer = new Ball;
+    double *tmpAngle = new double;
+    *tmpAngle = (90 - angle)* M_PI/180;
+    newBallPointer->color = 1;
+    newBallPointer->x_cent = cannonRect.x + cannonRect.w/2 + 1.3 * cannonRect.w/2 * cos(*tmpAngle);
+    newBallPointer->y_cent = cannonRect.y + cannonRect.h/2 - 1.3 * cannonRect.h/2 * sin(*tmpAngle);
+    newBallPointer->vx_cent = 2 * cos(*tmpAngle);
+    newBallPointer->vy_cent = -2 * sin(*tmpAngle);
+    delete tmpAngle;
+    tmpAngle = nullptr;
+    shootingBalls.emplace_back(newBallPointer);
 }

@@ -5,11 +5,14 @@ void Cell::addBall(int clr){
     ball = new Ball;
     ball->x_cent = x_cent;
     ball->y_cent = y_cent;
+    ball->vx_cent = vx_cent;
+    ball->vy_cent = vy_cent;
     ball->color = clr;
+    empty = false;
 }
 
-void Cell::render(){
-    if(!empty) {
+void Cell::render() const{
+    if(!empty){
         ball->render();
     }
 }
@@ -22,10 +25,10 @@ void Cell::dropBall() {
     }
 }
 
-void Cell::moveDown(double d) {
+void Cell::update() {
     if(!empty)
-        ball->y_cent += d;
-    y_cent += d;
+        ball->update();
+    y_cent += vy_cent;
 }
 
 void Cell::destroy() {

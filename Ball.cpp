@@ -21,11 +21,12 @@ void Ball::render(){
             break;
     }
     path += child;
-    setRectWithCenter(ballRect, x_cent, y_cent, 60, 60);
+    setRectWithCenter(ballRect, x_cent, y_cent, 60+cnst, 60+cnst);
     ballPic = TextureManager::LoadTexture(path.c_str());
     SDL_RenderCopy(Game::renderer, ballPic, nullptr, &ballRect);
 }
 
-void Ball::fall() {
-
+void Ball::update() {
+    x_cent += vx_cent;
+    y_cent += vy_cent;
 }

@@ -66,9 +66,13 @@ class PlayMenu{
         void render();
         void handleEvents(SDL_Event event);
         void update();
-        SDL_Rect backRect;
-        SDL_Texture *backPic = nullptr;
+        void setAngle(int &x, int &y);
+        SDL_Rect backRect, cannonRect;
+        SDL_Texture *backPic = nullptr, *cannonPic;
         Map mp;
+    private:
+        double angle;
+        double dx, dy;
 };
 
 class EndMenu{
@@ -77,7 +81,7 @@ class EndMenu{
         void render();
         void handleEvents(SDL_Event);
         void update();
-        std::string makeValid(const std::string);
+        std::string makeValid(std::string);
         int index=0;
         bool backspace=false, del=false, left=false, right=false, redirect=false;
         std::string topText;

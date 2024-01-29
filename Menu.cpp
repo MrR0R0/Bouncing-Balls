@@ -273,7 +273,7 @@ void SoundMenu::loadMusic(const char *path) {
     Game::music = Mix_LoadMUS(path);
     if(Game::music == nullptr)
         std::cout << "Failed to load the music!\n";
-    Mix_PlayMusic(Game::music, -1);
+    //Mix_PlayMusic(Game::music, -1);
 }
 
 void ScoreMenu::setScores(const char* path) {
@@ -354,29 +354,47 @@ void ScoreMenu::handleEvents(SDL_Event event){
     }
 }
 
-void PlayMenu::init() {
+void PlayMenu::setAngle(int &xMouse, int &yMouse){
+    dy = abs(yMouse - (cannonRect.y + cannonRect.h/2));
+    dx = abs(xMouse - (cannonRect.x + cannonRect.w/2));
+    angle = 90 - atan(dy/dx) * 180 / M_PI;
+    if(yMouse > cannonRect.y + cannonRect.h/2)
+        angle = 90;
+    if(xMouse <= cannonRect.x + cannonRect.w/2) {
+        angle *= -1;
+    }
+}
+
+void PlayMenu::init(){
     setRectWithCenter(backRect, 25, 775, 50, 50);
+    setRectWithCenter(cannonRect, 300, 750, 100, 100);
     backPic = TextureManager::LoadTexture(backPicPath);
+    cannonPic = TextureManager::LoadTexture("..\\assets\\arrow.jpg");
     mp.LoadMap();
 }
 
 void PlayMenu::render() {
-    SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
     mp.render();
+    SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
+    SDL_RenderCopyEx(Game::renderer, cannonPic, nullptr, &cannonRect, angle, nullptr, SDL_FLIP_NONE);
 }
 
 void PlayMenu::handleEvents(SDL_Event event) {
     int x_mouse, y_mouse;
+    SDL_GetMouseState(&x_mouse, &y_mouse);
+    setAngle(x_mouse, y_mouse);
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
             break;
         case SDL_MOUSEBUTTONDOWN:
-            SDL_GetMouseState(&x_mouse, &y_mouse);
             if(pointInRect(backRect, x_mouse, y_mouse)){
                 mp.destroy();
                 Game::menuQueue.pop_back();
                 init();
+            }
+            else{
+                mp.addShootingBall(angle, cannonRect);
             }
             break;
         default:

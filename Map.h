@@ -8,14 +8,16 @@
 class Map{
     public:
         void LoadMap();
-        void render();
+        void render() const;
         void update();
         void destroy();
         void getSameColorNeighbors(int x, int y);
         void getNonEmptyNeighbors(int, int);
-        std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
+        void removeInvisibleBalls();
+        void addShootingBall(const double &angle, SDL_Rect &cannonRect);
+        static std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
         void dropLooseBalls();
-        bool inMap(int x, int y);
+        static bool inMap(int x, int y);
         static std::vector<Ball*> fallingBalls;
         int initialY = 0;
         Cell *map;
@@ -24,7 +26,9 @@ class Map{
         std::set<std::pair<int, int>> checkedBalls;
         std::set<std::pair<int, int>> nonEmptyNeighbors;
         std::vector<Ball*> fallingBallsCopy;
-        double speed=1, acceleration=2;
+        std::vector<Ball*> shootingBalls;
+        std::vector<Ball*> shootingBallsCopy;
+        double acceleration=2;
 };
 
 #endif //BOUNCINGBALLS_MAP_H
