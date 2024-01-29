@@ -15,20 +15,26 @@ class Map{
         void getNonEmptyNeighbors(int, int);
         void removeInvisibleBalls();
         void addShootingBall(const double &angle, SDL_Rect &cannonRect);
+        void updateShootingBalls();
+        std::pair<int, int> getClosestEmptyCell(std::vector<std::pair<int, int>> cells, double x, double y);
         static std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
         void dropLooseBalls();
         static bool inMap(int x, int y);
-        static bool inScreen(double &x, double &y);
+        static bool inScreen(double &y);
         static std::vector<Ball*> fallingBalls;
+        static int cellNumber;
         int initialY = -400;
         Cell *map;
     private:
         std::set<std::pair<int, int>> sameColorNeighbors;
+        std::set<std::pair<int, int>> nonEmptyCells;
+        std::set<std::pair<int, int>> newFilledCells;
         std::set<std::pair<int, int>> checkedBalls;
         std::set<std::pair<int, int>> nonEmptyNeighbors;
         std::vector<Ball*> fallingBallsCopy;
-        std::vector<Ball*> shootingBalls;
-        std::vector<Ball*> shootingBallsCopy;
+        std::set<Ball*> shootingBalls;
+        std::set<Ball*> stationaryBalls;
+        std::set<Ball*> shootingBallsCopy;
         double acceleration=2;
 };
 
