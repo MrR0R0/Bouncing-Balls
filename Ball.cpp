@@ -7,7 +7,12 @@ SDL_Rect Ball::ballRectCopy;
 
 int Ball::cnst = 8;
 
-void Ball::render(){
+void Ball::init(int c, double x, double y, double vx, double vy){
+    color = c;
+    x_cent = x;
+    y_cent = y;
+    vx_cent = vx;
+    vy_cent = vy;
     std::string path, child;
     if(color == 1) child = redBallPicPath;
     else if(color == 2) child = greenBallPicPath;
@@ -26,8 +31,11 @@ void Ball::render(){
             break;
     }
     path += child;
-    setRectWithCenter(ballRect, x_cent, y_cent, 60+cnst, 60+cnst);
     ballPic = TextureManager::LoadTexture(path.c_str());
+}
+
+void Ball::render(){
+    setRectWithCenter(ballRect, x_cent, y_cent, 60+cnst, 60+cnst);
     SDL_RenderCopy(Game::renderer, ballPic, nullptr, &ballRect);
 }
 

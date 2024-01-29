@@ -5,6 +5,9 @@
 
 SDL_Color white = {255, 255, 255};
 SDL_Color cyan = {127,255,212};
+SDL_Color black = {0, 0, 0};
+double dx, dy;
+int x_mouse, y_mouse;
 
 std::string EndMenu::text, EndMenu::textCpy;
 
@@ -38,7 +41,6 @@ void MainMenu::render(){
 }
 
 void MainMenu::handleEvents(SDL_Event event) {
-    int x_mouse, y_mouse;
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
@@ -85,7 +87,6 @@ void ModeMenu::render(){
 }
 
 void ModeMenu::handleEvents(SDL_Event event) {
-    int x_mouse, y_mouse;
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
@@ -157,7 +158,6 @@ void SettingsMenu::render(){
 }
 
 void SettingsMenu::handleEvents(SDL_Event event){
-    int x_mouse, y_mouse;
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
@@ -222,7 +222,6 @@ void SoundMenu::render(){
 }
 
 void SoundMenu::handleEvents(SDL_Event event){
-    int x_mouse, y_mouse;
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
@@ -273,7 +272,7 @@ void SoundMenu::loadMusic(const char *path) {
     Game::music = Mix_LoadMUS(path);
     if(Game::music == nullptr)
         std::cout << "Failed to load the music!\n";
-    //Mix_PlayMusic(Game::music, -1);
+    Mix_PlayMusic(Game::music, -1);
 }
 
 void ScoreMenu::setScores(const char* path) {
@@ -321,7 +320,6 @@ void ScoreMenu::render(){
 }
 
 void ScoreMenu::handleEvents(SDL_Event event){
-    int x_mouse, y_mouse;
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
@@ -369,19 +367,23 @@ void PlayMenu::setAngle(int &xMouse, int &yMouse){
 void PlayMenu::init(){
     setRectWithCenter(backRect, 25, 775, 50, 50);
     setRectWithCenter(cannonRect, 300, 750, 100, 100);
+    setRectWithCenter(barRect, 300, 670, 600, 5);
+    setRectWithCenter(messageRect, 300, 350, 300, 80);
     backPic = TextureManager::LoadTexture(backPicPath);
     cannonPic = TextureManager::LoadTexture("..\\assets\\arrow.jpg");
+    textMessage = TextureManager::LoadFont("..\\fonts\\comic.ttf", 28, "Game Over!", white);
+    lastTick = SDL_GetTicks();
     mp.LoadMap();
 }
 
 void PlayMenu::render() {
+    SDL_RenderFillRect(Game::renderer, &barRect);
     mp.render();
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
     SDL_RenderCopyEx(Game::renderer, cannonPic, nullptr, &cannonRect, angle, nullptr, SDL_FLIP_NONE);
 }
 
 void PlayMenu::handleEvents(SDL_Event event) {
-    int x_mouse, y_mouse;
     SDL_GetMouseState(&x_mouse, &y_mouse);
     setAngle(x_mouse, y_mouse);
     switch (event.type) {
@@ -394,8 +396,9 @@ void PlayMenu::handleEvents(SDL_Event event) {
                 Game::menuQueue.pop_back();
                 mp.LoadMap();
             }
-            else{
+            else if(SDL_GetTicks()-lastTick>=500){
                 mp.addShootingBall(angle, cannonRect);
+                lastTick = SDL_GetTicks();
             }
             break;
         default:
@@ -405,6 +408,13 @@ void PlayMenu::handleEvents(SDL_Event event) {
 
 void PlayMenu::update(){
     mp.update();
+    if(mp.passedTheBar(barRect.y + barRect.h/2)){
+        SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
+        SDL_RenderPresent(Game::renderer);
+        SDL_Delay(3000);
+        Game::menuQueue.pop_back();
+        Game::menuQueue.push_back(End);
+    }
 }
 
 void EndMenu::init() {
@@ -469,7 +479,6 @@ void EndMenu::update() {
 }
 
 void EndMenu::handleEvents(SDL_Event event) {
-    int x_mouse, y_mouse;
     keystates = SDL_GetKeyboardState(nullptr);
     switch (event.type) {
         case SDL_QUIT:
@@ -511,7 +520,7 @@ void EndMenu::handleEvents(SDL_Event event) {
         else if(event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
                 case SDLK_BACKSPACE:
-                    if(text.length()>0)
+                    if(!text.empty())
                         backspace = true;
                     break;
                 case SDLK_LEFT:
@@ -554,7 +563,7 @@ void EndMenu::handleEvents(SDL_Event event) {
     }
 }
 
-std::string EndMenu::makeValid(const std::string str) {
+std::string EndMenu::makeValid(const std::string &str) {
     int righInd, leftInd;
     bool flag=true;
     for(int i=0; i<str.length() && flag; i++)

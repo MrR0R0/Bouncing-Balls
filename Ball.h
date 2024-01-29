@@ -5,6 +5,7 @@
 
 class Ball{
     public:
+        void init(int c, double x, double y, double vx, double vy);
         void render();
         void update();
         bool nextMoveCollisionWithCell(double, double);

@@ -2,13 +2,9 @@
 #include "Map.h"
 
 void Cell::addBall(int clr){
-    ball = new Ball;
-    ball->x_cent = x_cent;
-    ball->y_cent = y_cent;
-    ball->vx_cent = vx_cent;
-    ball->vy_cent = vy_cent;
-    ball->color = clr;
-    empty = false;
+        ball = new Ball;
+        ball->init(clr, x_cent, y_cent, vx_cent, vy_cent);
+        empty = false;
 }
 
 void Cell::render() const{
@@ -17,10 +13,11 @@ void Cell::render() const{
     }
 }
 
-void Cell::dropBall() {
+void Cell::dropBall(int x, int y) {
     if(!empty) {
         empty = true;
         Map::fallingBalls.emplace_back(ball);
+        Map::nonEmptyCells.erase({x, y});
         ball = nullptr;
     }
 }

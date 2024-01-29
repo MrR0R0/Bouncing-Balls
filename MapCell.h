@@ -12,7 +12,7 @@ class Cell{
         void render() const;
         void destroy();
         void addBall(int);
-        void dropBall();
+        void dropBall(int x, int y);
         void update();
 };
 
