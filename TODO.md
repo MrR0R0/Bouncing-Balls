@@ -12,6 +12,7 @@
 - [ ] picking better sound effects
 
 ### pause
+- [ ] adding pause menu
 
 ## Game logic
 - [x] creating a map
@@ -19,5 +20,5 @@
 
 ## Elements and animations
 ### cannon
-- [ ] picking a reasonable image for cannon for now
-- [ ] pointing in the direction of mouse
+- [x] picking a reasonable image for cannon for now
+- [x] pointing in the direction of mouse
