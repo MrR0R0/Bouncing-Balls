@@ -24,7 +24,7 @@ void Cell::dropBall(int x, int y) {
 
 void Cell::update() {
     if(!empty)
-        ball->update();
+        ball->update(0);
     y_cent += vy_cent;
 }
 
@@ -33,4 +33,11 @@ void Cell::destroy() {
         delete ball;
         ball = nullptr;
     }
+}
+
+void Cell::init(double xCent, double yCent, double vxCent, double vyCent) {
+    x_cent = xCent;
+    y_cent = yCent;
+    vx_cent = vxCent;
+    vy_cent = vyCent;
 }

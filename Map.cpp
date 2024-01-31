@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "misc-no-recursion"
 #include "Map.h"
 #include "TextureManager.h"
 
@@ -14,14 +16,14 @@ void Map::LoadMap(){
         for (int col = 0; col < 10; col++) {
             if(inMap(row, col)){
                 ind = 10 * row + col;
-                map[ind].x_cent = 60 * col + 30;
-                if(row%2==0)
-                    map[ind].x_cent += 30;
-                map[ind].y_cent = 60 * row + 30 + initialY;
-                map[ind].vx_cent = 0;
-                map[ind].vy_cent = 0.5;
+                if(row%2==1){
+                    map[ind].init(60 * col + 30, 60 * row + 30 + initialY, 0, 0.5);
+                }
+                if(row%2==0){
+                    map[ind].init(60 * col + 60, 60 * row + 30 + initialY, 0, 0.5);
+                }
                 if(col%4==2 && row<12){
-                    map[ind].addBall(rand()%2+1);
+                    map[ind].addBall(rand()%2+1+32);
                     nonEmptyCells.insert({row, col});
                 }
             }
@@ -45,8 +47,7 @@ void Map::update(){
     for(int i=0; i < cellNumber; i++)
         map[i].update();
     for(auto &i : fallingBalls){
-        i->vy_cent = 20 > i->vy_cent + acceleration ? i->vy_cent + acceleration : 20;
-        i->update();
+        i->update(2);
     }
     for(auto &i : newFilledCells){
         checkBallForFall(i.first, i.second);
@@ -155,7 +156,7 @@ void Map::dropLooseBalls(){
 
 void Map::removeInvisibleBalls() {
     for(auto &i : fallingBalls){
-        if(i->y_cent>840) {
+        if(i->hitBottom()) {
             delete i;
             i = nullptr;
         }
@@ -166,7 +167,7 @@ void Map::removeInvisibleBalls() {
     fallingBallsCopy.clear();
 
     for(auto i : shootingBalls){
-        if(i->x_cent < -40 || i->x_cent > 640) {
+        if(i->outOfScreen()) {
             delete i;
             i = nullptr;
         }
@@ -190,8 +191,8 @@ void Map::addShootingBall(const double &angle, SDL_Rect &cannonRect) {
     auto *tmpAngle = new double;
     *tmpAngle = (90 - angle)* M_PI/180;
     newBallPointer->init(1,
-                         cannonRect.x + cannonRect.w/2 + 1.3 * cannonRect.w/2 * cos(*tmpAngle),
-                         cannonRect.y + cannonRect.h/2 - 1.3 * cannonRect.h/2 * sin(*tmpAngle),
+                         cannonRect.x + (int)(cannonRect.w/2) + 1.3 * cannonRect.w/2 * cos(*tmpAngle),
+                         cannonRect.y + (int)(cannonRect.h/2) - 1.3 * cannonRect.h/2 * sin(*tmpAngle),
                          2 * cos(*tmpAngle),
                          -2 * sin(*tmpAngle));
     delete tmpAngle;
@@ -205,17 +206,18 @@ bool Map::inScreen(double &y) {
     return false;
 }
 
-std::pair<int, int> Map::getClosestEmptyCell(std::vector<std::pair<int, int>> cells, double x, double y){
+std::pair<int, int> Map::closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> point) const{
     std::vector<std::pair<double, int>> distance;
-    for(int i=0; i<cells.size(); i++) {
-        ind = cells[i].first * 10 + cells[i].second;
+    std::vector<std::pair<int, int>> neighbors = immediateNeighbors(cell.first, cell.second);
+    for(int i=0; i<neighbors.size(); i++) {
+        ind = neighbors[i].first * 10 + neighbors[i].second;
         if(map[ind].empty)
-            distance.emplace_back(pow((map[ind].x_cent - x), 2) + pow((map[ind].y_cent - y), 2), i);
+            distance.emplace_back(pow((map[ind].x_cent - point.first), 2) + pow((map[ind].y_cent - point.second), 2), i);
     }
     if(distance.empty())
         return std::make_pair(-1, -1);
     std::sort(distance.begin(), distance.end());
-    return cells[distance[0].second];
+    return neighbors[distance[0].second];
 }
 
 void Map::checkBallForFall(int x, int y){
@@ -229,33 +231,24 @@ void Map::checkBallForFall(int x, int y){
 
 void Map::updateShootingBalls(){
 
-    for(auto &i : shootingBalls){
-        if(i->x_cent + i->vx_cent >= 600 - 30 - Ball::cnst/2){
-            i->x_cent = 600 - 30 - Ball::cnst/2;
-            i->vx_cent *= -1;
-        }
-        else if(i->x_cent + i->vx_cent <= 30 + Ball::cnst/2){
-            i->x_cent = 30 + Ball::cnst/2;
-            i->vx_cent *= -1;
-        }
+    for(auto i : shootingBalls){
+        if(i->hitVerticalEdges())
+            i->bounce();
         else
-            i->update();
+            i->update(0);
     }
 
     std::pair<int, int> closestCell;
     for(auto &ball : shootingBalls) {
         for (auto &i : nonEmptyCells) {
             ind = i.first * 10 + i.second;
-            if(inMap(i.first, i.second)) {
-                if (ball->nextMoveCollisionWithCell(map[ind].x_cent, map[ind].y_cent) == SDL_TRUE) {
-                    closestCell = getClosestEmptyCell(immediateNeighbors(i.first, i.second), ball->x_cent, ball->y_cent);
-                    //std::cout << i.first << " " << i.second << " " << map[ind].empty << std::endl;
-                    if(closestCell != std::make_pair(-1, -1)) {
-                        map[closestCell.first * 10 + closestCell.second].addBall(ball->color);
-                        newFilledCells.insert({closestCell.first, closestCell.second});
-                        stationaryBalls.insert(ball);
-                        break;
-                    }
+            if (ball->collisionWithCell(map[ind].x_cent, map[ind].y_cent) == SDL_TRUE) {
+                closestCell = closestEmptyCell({i.first, i.second}, ball->coordinate());
+                if(closestCell != std::make_pair(-1, -1)) {
+                    map[closestCell.first * 10 + closestCell.second].addBall(ball->color);
+                    newFilledCells.insert({closestCell.first, closestCell.second});
+                    stationaryBalls.insert(ball);
+                    break;
                 }
             }
         }
@@ -270,7 +263,7 @@ void Map::updateShootingBalls(){
     stationaryBalls.clear();
 }
 
-bool Map::passedTheBar(int yBar){
+bool Map::passedTheBar(int yBar) const{
     for(auto &i : nonEmptyCells){
         ind = i.first * 10 + i.second;
         if(map[ind].y_cent > yBar)
@@ -278,3 +271,5 @@ bool Map::passedTheBar(int yBar){
     }
     return false;
 }
+
+#pragma clang diagnostic pop

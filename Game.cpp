@@ -12,10 +12,10 @@ SoundMenu soundMenu;
 ScoreMenu scoreMenu;
 PlayMenu playMenu;
 EndMenu endMenu;
-SDL_Rect destR;
 
 SDL_Renderer *Game::renderer = nullptr;
 SDL_Texture *Game::background = nullptr;
+SDL_Rect Game::backgroundRect;
 bool Game::isRunning = true;
 unsigned int Game::score=0;
 gameModes Game::gameMode = Random;
@@ -23,25 +23,25 @@ ballThemes Game::ballTheme = Glass;
 Mix_Music *Game::music = Mix_LoadMUS("..\\assets\\ice_dance.mp3");
 vector<menuModes> Game::menuQueue;
 
-void setRectWithCenter(SDL_Rect &rect, int x, int y, int w, int h) {
-    rect.x = x - w/2;
-    rect.y = y - h/2;
-    rect.w = w;
-    rect.h = h;
+void setRectWithCenter(SDL_Rect &rect, double x, double y, double w, double h) {
+    rect.x = (int)(x - w/2);
+    rect.y = (int)(y - h/2);
+    rect.w = (int)w;
+    rect.h = (int)h;
 }
 
-void setRectWithCenter(SDL_Rect *rect, int x, int y, int w, int h) {
-    rect->x = x - w/2;
-    rect->y = y - h/2;
-    rect->w = w;
-    rect->h = h;
+void setRectWithCenter(SDL_Rect *rect, double x, double y, double w, double h) {
+    rect->x = (int)(x - w/2);
+    rect->y = (int)(y - h/2);
+    rect->w = (int)w;
+    rect->h = (int)h;
 }
 
-void setRectWithCorner(SDL_Rect &rect, int x, int y, int w, int h){
-    rect.x = x;
-    rect.y = y;
-    rect.w = w;
-    rect.h = h;
+void setRectWithCorner(SDL_Rect &rect, double x, double y, double w, double h){
+    rect.x = (int)x;
+    rect.y = (int)y;
+    rect.w = (int)w;
+    rect.h = (int)h;
 }
 
 bool pointInRect(SDL_Rect rect, int &x, int &y) {
@@ -50,15 +50,11 @@ bool pointInRect(SDL_Rect rect, int &x, int &y) {
     return false;
 }
 
-Game::Game(){}
-
-Game::~Game(){}
-
-void Game::init(const char* title, int xpos, int ypos, int width, int height){
-    menuQueue.push_back(Play);
+void Game::init(const char* title, int xPos, int yPos, int width, int height){
+    menuQueue.push_back(Main);
     if(SDL_Init(SDL_INIT_EVERYTHING) == 0){
-        cout << "Subsys initialized" << endl;
-        window = SDL_CreateWindow(title, xpos, ypos, width, height, 0);
+        cout << "Subsystem initialized" << endl;
+        window = SDL_CreateWindow(title, xPos, yPos, width, height, 0);
         if(window){
             cout << "window created!" << endl;
         }
@@ -74,7 +70,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height){
     }
     backgroundRect.w = 600;
     backgroundRect.h = 800;
-    background = TextureManager::LoadTexture(theme1Path);
+    background = TextureManager::LoadTexture(background1Path);
     TTF_Init();
     SDL_StartTextInput();
     mainMenu.init();
@@ -125,8 +121,12 @@ void Game::update(){
     switch(lastMenu()){
         case Play:
             playMenu.update();
+            break;
         case End:
             endMenu.update();
+            break;
+        default:
+            break;
     }
 }
 

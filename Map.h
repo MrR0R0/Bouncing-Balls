@@ -17,8 +17,8 @@ class Map{
         void addShootingBall(const double &angle, SDL_Rect &cannonRect);
         void updateShootingBalls();
         void checkBallForFall(int x, int y);
-        bool passedTheBar(int yBar);
-        std::pair<int, int> getClosestEmptyCell(std::vector<std::pair<int, int>> cells, double x, double y);
+        bool passedTheBar(int yBar) const;
+        std::pair<int, int> closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> c) const;
         static std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
         void dropLooseBalls();
         static bool inMap(int x, int y);
@@ -27,18 +27,17 @@ class Map{
         static std::set<std::pair<int, int>> nonEmptyCells;
         static std::set<std::pair<int, int>> sameColorNeighbors;
         static int cellNumber;
-        int initialY = -400;
+        int initialY = -100;
         Cell *map;
     private:
+        std::set<std::pair<int, int>> nonEmptyNeighbors;
         std::set<std::pair<int, int>> nonEmptyCellsCopy;
         std::set<std::pair<int, int>> newFilledCells;
         std::set<std::pair<int, int>> checkedBalls;
-        std::set<std::pair<int, int>> nonEmptyNeighbors;
         std::vector<Ball*> fallingBallsCopy;
         std::set<Ball*> shootingBalls;
         std::set<Ball*> stationaryBalls;
         std::set<Ball*> shootingBallsCopy;
-        double acceleration=2;
 };
 
 #endif //BOUNCINGBALLS_MAP_H
