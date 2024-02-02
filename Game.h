@@ -10,8 +10,11 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include <string>
 #include <time.h>
+#include <random>
+#include <chrono>
+#include <thread>
+#include <cmath>
 
 void setRectWithCenter(SDL_Rect &rect, double x, double y, double w, double h);
 void setRectWithCorner(SDL_Rect &rect, double x, double y, double w, double h);

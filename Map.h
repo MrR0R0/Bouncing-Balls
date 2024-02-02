@@ -21,16 +21,17 @@ public:
     int closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> c);
     static std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
     void dropLooseBalls();
+    static void generateRandomMap();
     static bool inMap(int x, int y);
     static bool inScreen(double &y);
     static std::vector<Ball> fallingBalls;
     static std::set<std::pair<int, int>> nonEmptyCells;
     static std::set<std::pair<int, int>> sameColorNeighbors;
-    bool areLoose(std::set<std::pair<int, int>> &);
+    static bool areLoose(std::set<std::pair<int, int>> &);
     static std::set<std::pair<int, int>> nonEmptyNeighbors;
     std::vector<Ball> shootingBall;
     static int cellNumber;
-    int initialY = 100;
+    int initialY = -500;
     std::vector<Cell> map;
 private:
     std::set<std::pair<int, int>> nonEmptyCellsCopy;

@@ -35,3 +35,7 @@ const char* yellowPurpleBallPicPath = "\\yellow_purple.png";
 const char* background1Path = R"(..\assets\background\theme1.jpg)";
 const char* background2Path = R"(..\assets\background\theme2.jpg)";
 const char* background3Path = R"(..\assets\background\theme3.jpg)";
+
+
+//generated map
+const char* generatedMapPath = "..\\random.txt";

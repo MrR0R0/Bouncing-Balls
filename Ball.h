@@ -5,7 +5,7 @@
 
 class Ball{
     public:
-        void init(int c, double x, double y, double vx, double vy);
+        Ball(int c, double x, double y, double vx, double vy);
         bool collisionWithCell(double, double);
         bool hitVerticalEdges() const;
         bool outOfScreen() const;
@@ -14,7 +14,6 @@ class Ball{
         void bounce();
         void render();
         void update(double acceleration);
-        void removeLock();
         int color;  // red:1 | green:2 | blue:4 | yellow:8 | purple : 16 | locked : 32
         SDL_Rect ballRect;
     private:

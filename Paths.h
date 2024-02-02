@@ -38,4 +38,7 @@ extern const char* background1Path;
 extern const char* background2Path;
 extern const char* background3Path;
 
+//generated map
+extern const char* generatedMapPath;
+
 #endif //BOUNCINGBALLS_PATHS_H

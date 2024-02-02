@@ -11,8 +11,7 @@ void Cell::init(double xCent, double yCent, double vxCent, double vyCent) {
 
 void Cell::addBall(int clr){
     ball.clear();
-    Ball b;
-    b.init(clr, x_cent, y_cent, vx_cent, vy_cent);
+    Ball b(clr, x_cent, y_cent, vx_cent, vy_cent);
     ball.emplace_back(b);
 }
 

@@ -53,6 +53,7 @@ void MainMenu::handleEvents(SDL_Event event) const{
                 Game::menuQueue.push_back(Score);
             else if(pointInRect(startRect, x_mouse, y_mouse)) {
                 Game::menuQueue.push_back(Play);
+                PlayMenu::mp.generateRandomMap();
                 PlayMenu::mp.LoadMap();
             }
             else if(pointInRect(modeRect, x_mouse, y_mouse))
