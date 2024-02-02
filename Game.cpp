@@ -30,13 +30,6 @@ void setRectWithCenter(SDL_Rect &rect, double x, double y, double w, double h) {
     rect.h = (int)h;
 }
 
-void setRectWithCenter(SDL_Rect *rect, double x, double y, double w, double h) {
-    rect->x = (int)(x - w/2);
-    rect->y = (int)(y - h/2);
-    rect->w = (int)w;
-    rect->h = (int)h;
-}
-
 void setRectWithCorner(SDL_Rect &rect, double x, double y, double w, double h){
     rect.x = (int)x;
     rect.y = (int)y;
@@ -160,7 +153,7 @@ void Game::render() {
 }
 
 void Game::clean() {
-    playMenu.mp.destroy();
+    PlayMenu::mp.destroy();
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_StopTextInput();

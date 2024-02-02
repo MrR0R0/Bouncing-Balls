@@ -8,9 +8,9 @@ class Cell{
     public:
         void init(double xCent, double yCent, double vxCent, double vyCent);
         double x_cent, y_cent, vx_cent, vy_cent;
-        bool empty = true;
-        Ball *ball = nullptr;
-        void render() const;
+        bool empty() const {return ball.empty();};
+        std::vector<Ball> ball;
+        void render();
         void destroy();
         void addBall(int color);
         void dropBall(int x, int y);

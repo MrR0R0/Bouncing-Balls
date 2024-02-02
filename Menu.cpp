@@ -392,7 +392,7 @@ void PlayMenu::init(){
 
 void PlayMenu::render() {
     SDL_RenderFillRect(Game::renderer, &barRect);
-    mp.render();
+    PlayMenu::mp.render();
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
     SDL_RenderCopyEx(Game::renderer, cannonPic, nullptr, &cannonRect, angle, nullptr, SDL_FLIP_NONE);
 }
@@ -406,12 +406,12 @@ void PlayMenu::handleEvents(SDL_Event event) {
             break;
         case SDL_MOUSEBUTTONDOWN:
             if(pointInRect(backRect, x_mouse, y_mouse)){
-                mp.destroy();
+                PlayMenu::mp.destroy();
                 Game::menuQueue.pop_back();
                 Game::score = 0;
             }
-            else if(SDL_GetTicks()-lastTick>=500){
-                mp.addShootingBall(angle, cannonRect);
+            else if(PlayMenu::mp.shootingBall.empty()){
+                PlayMenu::mp.addShootingBall(angle, cannonRect);
                 lastTick = SDL_GetTicks();
             }
             break;
@@ -421,8 +421,8 @@ void PlayMenu::handleEvents(SDL_Event event) {
 }
 
 void PlayMenu::update(){
-    mp.update();
-    if(mp.passedTheBar(barRect.y + barRect.h/2)){
+    PlayMenu::mp.update();
+    if(PlayMenu::mp.passedTheBar(barRect.y + barRect.h/2)){
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
         SDL_RenderPresent(Game::renderer);
         SDL_Delay(2000);
@@ -491,7 +491,7 @@ void EndMenu::update() {
         }
         SDL_RenderCopy(Game::renderer, redirectMessage, nullptr, &redirectRect);
         SDL_RenderPresent(Game::renderer);
-        SDL_Delay(1500);
+        //SDL_Delay(1500);
         Game::menuQueue.pop_back();
         text="";
     }

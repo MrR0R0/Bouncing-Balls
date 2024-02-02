@@ -14,7 +14,6 @@
 #include <time.h>
 
 void setRectWithCenter(SDL_Rect &rect, double x, double y, double w, double h);
-void setRectWithCenter(SDL_Rect *rect, double x, double y, double w, double h);
 void setRectWithCorner(SDL_Rect &rect, double x, double y, double w, double h);
 bool pointInRect(SDL_Rect rect, int &x, int &y);
 

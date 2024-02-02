@@ -9,14 +9,14 @@ int main(int argc, char* argv[]) {
     const int frameDelay = 1000 / FPS;
 
     Uint32 frameStart;
-    int frameTime;
+    Uint32 frameTime;
 
     game.init("Hi", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 600, 800);
 
-    while(game.isRunning){
+    while(Game::isRunning){
         frameStart = SDL_GetTicks();
-        game.handleEvents();
-        game.update();
+        Game::handleEvents();
+        Game::update();
         game.render();
         frameTime = SDL_GetTicks() - frameStart;
         if(frameDelay > frameTime)
