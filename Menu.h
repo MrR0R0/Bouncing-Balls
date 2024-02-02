@@ -70,7 +70,7 @@ class PlayMenu{
         Uint32 lastTick;
         SDL_Rect cannonRect, barRect, messageRect;
         SDL_Texture *cannonPic, *textMessage;
-        static Map mp;
+        Map map;
     private:
         double angle;
 };
@@ -90,6 +90,5 @@ class EndMenu{
         SDL_Texture *textMessage, *tickPic, *topMessage, *enterNameMessage, *warningMessage, *redirectMessage;
         const Uint8 *keyStates;
         endMenuMode endMode;
-
 };
 #endif //BOUNCINGBALLS_MENU_H

@@ -10,7 +10,6 @@ SDL_Rect backRect{50, 50, 50, 50};
 SDL_Texture *backPic = TextureManager::LoadTexture(backPicPath);
 double dx, dy;
 int x_mouse, y_mouse;
-Map PlayMenu::mp;
 std::string EndMenu::text, EndMenu::textCpy;
 
 void MainMenu::init(){
@@ -53,8 +52,6 @@ void MainMenu::handleEvents(SDL_Event event) const{
                 Game::menuQueue.push_back(Score);
             else if(pointInRect(startRect, x_mouse, y_mouse)) {
                 Game::menuQueue.push_back(Play);
-                PlayMenu::mp.generateRandomMap();
-                PlayMenu::mp.LoadMap();
             }
             else if(pointInRect(modeRect, x_mouse, y_mouse))
                 Game::menuQueue.push_back(Modes);
@@ -382,6 +379,8 @@ void PlayMenu::setAngle(int &xMouse, int &yMouse){
 }
 
 void PlayMenu::init(){
+    map.generateRandomMap();
+    map.LoadMap();
     setRectWithCenter(cannonRect, 300, 750, 75, 115);
     setRectWithCenter(barRect, 300, 630, 600, 5);
     setRectWithCenter(messageRect, 300, 350, 300, 80);
@@ -393,7 +392,7 @@ void PlayMenu::init(){
 
 void PlayMenu::render() {
     SDL_RenderFillRect(Game::renderer, &barRect);
-    PlayMenu::mp.render();
+    map.render();
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
     SDL_RenderCopyEx(Game::renderer, cannonPic, nullptr, &cannonRect, angle, nullptr, SDL_FLIP_NONE);
 }
@@ -407,12 +406,13 @@ void PlayMenu::handleEvents(SDL_Event event) {
             break;
         case SDL_MOUSEBUTTONDOWN:
             if(pointInRect(backRect, x_mouse, y_mouse)){
-                PlayMenu::mp.destroy();
+                map.destroy();
+                init();
                 Game::menuQueue.pop_back();
                 Game::score = 0;
             }
-            else if(PlayMenu::mp.shootingBall.empty()){
-                PlayMenu::mp.addShootingBall(angle, cannonRect);
+            else if(map.shootingBall.empty()){
+                map.addShootingBall(angle, cannonRect);
                 lastTick = SDL_GetTicks();
             }
             break;
@@ -422,12 +422,15 @@ void PlayMenu::handleEvents(SDL_Event event) {
 }
 
 void PlayMenu::update(){
-    PlayMenu::mp.update();
-    if(PlayMenu::mp.passedTheBar(barRect.y + barRect.h/2)){
+    map.update();
+    if(map.passedTheBar(barRect.y + barRect.h/2)){
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
         SDL_RenderPresent(Game::renderer);
+        map.destroy();
+        init();
         SDL_Delay(2000);
         Game::score = 0;
+        init();
         if(!Game::menuQueue.empty())
             Game::menuQueue.pop_back();
         Game::menuQueue.push_back(End);
@@ -435,6 +438,8 @@ void PlayMenu::update(){
 }
 
 void EndMenu::init() {
+    backspace=false; del=false; left=false; right=false; redirect=false;
+    index = 0;
     topText = "It's over!";
     text="";
     setRectWithCorner(fullTextRect, 50, 300, 21*20, 50);
@@ -494,7 +499,7 @@ void EndMenu::update() {
         SDL_RenderPresent(Game::renderer);
         //SDL_Delay(1500);
         Game::menuQueue.pop_back();
-        text="";
+        init();
     }
 }
 

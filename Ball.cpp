@@ -2,7 +2,7 @@
 #include "TextureManager.h"
 #include "Paths.h"
 
-int Ball::cnst = 8;
+int Ball::cnst = 6;
 SDL_Texture* Ball::lockPic;
 SDL_Rect cellRect;
 

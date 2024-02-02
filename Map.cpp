@@ -39,6 +39,7 @@ void Map::LoadMap() {
         }
         row++;
     }
+
     while(row < cellNumber/10){
         for(int col=0; col<10; col++){
             cell.ball.clear();
@@ -52,7 +53,6 @@ void Map::LoadMap() {
         }
         row++;
     }
-    std::cout << map.size()<< std::endl;
 }
 
 void Map::render() {
@@ -82,6 +82,10 @@ void Map::destroy() {
     for (auto &i: map)
         i.destroy();
     map.clear();
+    sameColorNeighbors.clear();
+    nonEmptyNeighbors.clear();
+    nonEmptyCellsCopy.clear();
+    checkedBalls.clear();
     nonEmptyCells.clear();
     shootingBall.clear();
     fallingBalls.clear();
@@ -157,18 +161,22 @@ bool Map::areLoose(std::set<std::pair<int, int>> &cells) {
 
 void Map::dropLooseBalls() {
     checkedBalls.clear();
+    nonEmptyNeighbors.clear();
+    aboutToFall.clear();
     for (auto &i: nonEmptyCells) {
         if (checkedBalls.find(i) == checkedBalls.end()) {
             getNonEmptyNeighbors(i.first, i.second);
             if (areLoose(nonEmptyNeighbors)) {
-                for (auto &j: nonEmptyNeighbors) {
-                    map[j.first * 10 + j.second].dropBall(j.first * 10, j.second);
-                }
+                aboutToFall.insert(nonEmptyNeighbors.begin(), nonEmptyNeighbors.end());
             }
             checkedBalls.insert(nonEmptyNeighbors.begin(), nonEmptyNeighbors.end());
             nonEmptyNeighbors.clear();
         }
     }
+    for(auto &i : aboutToFall){
+        map[i.first * 10 + i.second].dropBall(i.first, i.second);
+    }
+    aboutToFall.clear();
     checkedBalls.clear();
 }
 
@@ -201,8 +209,8 @@ void Map::addShootingBall(const double &angle, SDL_Rect &cannonRect) {
     Ball newShootingBall(4,
                          cannonRect.x + (int) (cannonRect.w / 2) + 1.3 * cannonRect.w / 2 * cos(tmpAngle),
                          cannonRect.y + (int) (cannonRect.h / 2) - 1.3 * cannonRect.h / 2 * sin(tmpAngle),
-                         2 * cos(tmpAngle),
-                         -2 * sin(tmpAngle));
+                         8 * cos(tmpAngle),
+                         -8 * sin(tmpAngle));
     shootingBall.emplace_back(newShootingBall);
 }
 
@@ -232,6 +240,7 @@ int Map::closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> po
 }
 
 void Map::checkBallForFall(int x, int y) {
+    sameColorNeighbors.clear();
     getSameColorNeighbors(x, y);
     if (sameColorNeighbors.size() > 2) {
         for (auto &i: sameColorNeighbors) {
@@ -277,7 +286,7 @@ void Map::updateShootingBall() {
 bool Map::passedTheBar(int yBar) const {
     for (auto &i: nonEmptyCells) {
         ind = i.first * 10 + i.second;
-        if (map[ind].y_cent > yBar)
+        if (map[ind].y_cent+30 > yBar)
             return true;
     }
     return false;
@@ -286,7 +295,7 @@ bool Map::passedTheBar(int yBar) const {
 void Map::generateRandomMap() {
     int list[12][11];
     int chance  , randomcolor1 , randomcolor2 ;
-    bool listcheck[12][10] , colors[5] , L  ;
+    bool listcheck[12][10], L;
 
 
     for ( int i = 0; i < 12; i++ ) {

@@ -153,7 +153,6 @@ void Game::render() {
 }
 
 void Game::clean() {
-    PlayMenu::mp.destroy();
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_StopTextInput();

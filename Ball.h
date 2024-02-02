@@ -16,9 +16,9 @@ class Ball{
         void update(double acceleration);
         int color;  // red:1 | green:2 | blue:4 | yellow:8 | purple : 16 | locked : 32
         SDL_Rect ballRect;
+        static int cnst;
     private:
         static SDL_Texture *lockPic;
-        static int cnst;
         double x_cent, y_cent, vx_cent, vy_cent;
         std::vector<int> decodeColor(int c);
         SDL_Texture *ballPic;
