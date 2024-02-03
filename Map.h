@@ -26,6 +26,7 @@ public:
     int decideNextBallColor();
     static std::vector<Ball> fallingBalls;
     std::vector<Ball> shootingBall;
+    std::list<int> ballQueue;
 
 private:
     //cell related functions/variables

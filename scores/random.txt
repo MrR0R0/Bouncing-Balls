@@ -10,3 +10,6 @@
 0 helloooooo
 0 mewmew
 0 mewmew
+0 newUser
+157346 mynameis
+27952 huhIWon

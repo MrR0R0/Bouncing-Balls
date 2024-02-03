@@ -3,6 +3,7 @@
 
 #include "Map.h"
 #include "Paths.h"
+#include "Game.h"
 
 std::vector<Ball> Map::fallingBalls;
 std::set<std::pair<int, int>> Map::nonEmptyCells;
@@ -10,11 +11,11 @@ std::set<std::pair<int, int>> Map::nonEmptyCells;
 std::set<std::pair<int, int>> nonEmptyNeighbors;
 std::set<std::pair<int, int>> sameColorNeighbors;
 
-int Map::cellNumber = 160;
+int Map::cellNumber = 180;
 int ind;
 
 void Map::LoadMap() {
-    map.clear();
+    destroy();
     Cell cell;
     std::ifstream infile(generatedMapPath);
     std::string line, colorFromFile;
@@ -53,6 +54,8 @@ void Map::LoadMap() {
         }
         row++;
     }
+    ballQueue.clear();
+    ballQueue.push_back(decideNextBallColor());
 }
 
 void Map::render() {
@@ -65,6 +68,10 @@ void Map::render() {
         i.render();
     for (auto &i: shootingBall)
         i.render();
+
+    //for next ball
+    Ball nextBall(ballQueue.front(), 200, 750, 0, 0);
+    nextBall.render();
 }
 
 void Map::update() {
@@ -152,11 +159,9 @@ void Map::getNonEmptyNeighbors(int x, int y) {
 bool Map::areLoose(std::set<std::pair<int, int>> &cells) {
     if (cells.empty())
         return false;
-    for (auto &i: cells) {
-        if (i.first == 0)
-            return false;
-    }
-    return true;
+    if (std::all_of(cells.begin(), cells.end(), [](auto i){return i.first>0;}))
+        return true;
+    return false;
 }
 
 void Map::dropLooseBalls() {
@@ -173,6 +178,7 @@ void Map::dropLooseBalls() {
             nonEmptyNeighbors.clear();
         }
     }
+    Game::score += vacatedCells.size() * 10;
     for(auto &i : vacatedCells){
         map[i.first * 10 + i.second].dropBall(i.first, i.second);
     }
@@ -206,13 +212,14 @@ void Map::removeInvisibleBalls() {
 void Map::addShootingBall(const double &angle, SDL_Rect &cannonRect) {
     double tmpAngle;
     tmpAngle = (90 - angle) * M_PI / 180;
-    int newBallColor = decideNextBallColor();
-    Ball newShootingBall(newBallColor,
+    Ball newShootingBall(ballQueue.front(),
                          cannonRect.x + (int) (cannonRect.w / 2) + 1.3 * cannonRect.w / 2 * cos(tmpAngle),
                          cannonRect.y + (int) (cannonRect.h / 2) - 1.3 * cannonRect.h / 2 * sin(tmpAngle),
                          8 * cos(tmpAngle),
                          -8 * sin(tmpAngle));
     shootingBall.emplace_back(newShootingBall);
+    ballQueue.pop_front();
+    ballQueue.push_back(decideNextBallColor());
 }
 
 int Map::closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> point) {
@@ -238,6 +245,7 @@ void Map::checkBallForFall(int x, int y) {
     sameColorNeighbors.clear();
     getSameColorNeighbors(x, y);
     if (sameColorNeighbors.size() > 2) {
+        Game::score += 2 * (int)pow(sameColorNeighbors.size(), sameColorNeighbors.size() * 0.05);
         for (auto &i: sameColorNeighbors) {
             if (inMap(i.first, i.second)) {
                 if (map[i.first * 10 + i.second].ball[0].color < 32)
@@ -301,8 +309,8 @@ int Map::decideNextBallColor() {
     chance = distribution(gen) ;
     // red , green , blue , yellow , purple
     int x = cellColor.size();
-    if (x > 15 ) {
-        for (int i = x-1 ; i >= x-15 ; i-- ) {
+    if (x > 30 ) {
+        for (int i = x-1 ; i >= x-30 ; i-- ) {
             if (cellColor[i] != -1) {
                 for (int k = 0; k < 5; ++k) {
                     rgb[k] += (cellColor[i] >> k) & 1;
@@ -337,6 +345,5 @@ int Map::decideNextBallColor() {
     x = pow(2,i) ;
     return x;
 }
-
 
 #pragma clang diagnostic pop

@@ -1,7 +1,5 @@
 #include "Menu.h"
-#include "TextureManager.h"
 #include "FileManager.h"
-#include "Paths.h"
 
 SDL_Color white = {255, 255, 255};
 SDL_Color cyan = {127,255,212};
@@ -449,7 +447,6 @@ void PlayMenu::update(){
         map.destroy();
         init();
         SDL_Delay(2000);
-        Game::score = 0;
         init();
         if(!Game::menuQueue.empty())
             Game::menuQueue.pop_back();
@@ -518,8 +515,9 @@ void EndMenu::update() {
         }
         SDL_RenderCopy(Game::renderer, redirectMessage, nullptr, &redirectRect);
         SDL_RenderPresent(Game::renderer);
-        //SDL_Delay(1500);
+        SDL_Delay(1500);
         Game::menuQueue.pop_back();
+        Game::score = 0;
         init();
     }
 }
