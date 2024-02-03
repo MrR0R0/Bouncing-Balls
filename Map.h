@@ -16,11 +16,14 @@ public:
 
     //cell related functions/variables
     std::vector<Cell> map;
+    std::vector<int> cellColor;
     static std::set<std::pair<int, int>> nonEmptyCells;
+
 
     //ball related functions/variables
     void addShootingBall(const double &angle, SDL_Rect &cannonRect);
     bool passedTheBar(int yBar) const;
+    int decideNextBallColor();
     static std::vector<Ball> fallingBalls;
     std::vector<Ball> shootingBall;
 

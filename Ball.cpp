@@ -127,6 +127,8 @@ bool Ball::outOfScreen() const{
 }
 
 bool Ball::haveTheSameColor(int anotherColor){
+    if(color==-1 || anotherColor==-1)
+        return false;
     for(int i : decodeColor(color%32)){
         for(int j : decodeColor(anotherColor%32)){
             if(i==j && i!=-1)

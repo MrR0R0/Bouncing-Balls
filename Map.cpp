@@ -2,7 +2,6 @@
 #pragma ide diagnostic ignored "misc-no-recursion"
 
 #include "Map.h"
-#include "TextureManager.h"
 #include "Paths.h"
 
 std::vector<Ball> Map::fallingBalls;
@@ -207,7 +206,8 @@ void Map::removeInvisibleBalls() {
 void Map::addShootingBall(const double &angle, SDL_Rect &cannonRect) {
     double tmpAngle;
     tmpAngle = (90 - angle) * M_PI / 180;
-    Ball newShootingBall(4,
+    int newBallColor = decideNextBallColor();
+    Ball newShootingBall(newBallColor,
                          cannonRect.x + (int) (cannonRect.w / 2) + 1.3 * cannonRect.w / 2 * cos(tmpAngle),
                          cannonRect.y + (int) (cannonRect.h / 2) - 1.3 * cannonRect.h / 2 * sin(tmpAngle),
                          8 * cos(tmpAngle),
@@ -286,5 +286,57 @@ bool Map::passedTheBar(int yBar) const {
     }
     return false;
 }
+
+int Map::decideNextBallColor() {
+    cellColor.clear();
+    for(auto &i : nonEmptyCells){
+        ind = i.first * 10 + i.second;
+        if(!map[ind].empty())
+            cellColor.push_back(map[ind].ball[0].color);
+    }
+    std::mt19937 gen(std::chrono::steady_clock::now().time_since_epoch().count());
+
+    std::uniform_int_distribution<> distribution(1, 100)  ;
+    int rgb[5]={0,0,0 , 0 , 0 } , chance  ;
+    chance = distribution(gen) ;
+    // red , green , blue , yellow , purple
+    int x = cellColor.size();
+    if (x > 15 ) {
+        for (int i = x-1 ; i >= x-15 ; i-- ) {
+            if (cellColor[i] != -1) {
+                for (int k = 0; k < 5; ++k) {
+                    rgb[k] += (cellColor[i] >> k) & 1;
+                }
+            }
+        }
+    }
+    else if (x>0) {
+        for (int i = x-1 ; i >= 0 ; i--) {
+            if (cellColor[i] != -1) {
+                for (int k = 0; k < 5; ++k) {
+                    rgb[k] += (cellColor[i] >> k) & 1;
+                }
+            }
+        }
+    }
+
+    else {
+        return 0;
+    }
+    int i  = 0 ;
+    while(true){
+        i ++;
+        i = i % 5 ;
+        if (chance - rgb[i] > 0 ) {
+            chance -= rgb[i] ;
+        }
+        else {
+            break ;
+        }
+    }
+    x = pow(2,i) ;
+    return x;
+}
+
 
 #pragma clang diagnostic pop

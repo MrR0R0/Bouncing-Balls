@@ -24,7 +24,7 @@ void Cell::render(){
 void Cell::dropBall(int x, int y) {
     if(!empty()) {
         Map::fallingBalls.emplace_back(ball[0]);
-        Map::nonEmptyCells.erase({x, y});
+        Map::nonEmptyCells.erase(std::make_pair(x, y));
         ball.clear();
     }
 }
