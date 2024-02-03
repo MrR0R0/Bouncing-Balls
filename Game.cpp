@@ -23,26 +23,6 @@ ballThemes Game::ballTheme = Glass;
 Mix_Music *Game::music = Mix_LoadMUS("..\\assets\\ice_dance.mp3");
 vector<menuModes> Game::menuQueue;
 
-void setRectWithCenter(SDL_Rect &rect, double x, double y, double w, double h) {
-    rect.x = (int)(x - w/2);
-    rect.y = (int)(y - h/2);
-    rect.w = (int)w;
-    rect.h = (int)h;
-}
-
-void setRectWithCorner(SDL_Rect &rect, double x, double y, double w, double h){
-    rect.x = (int)x;
-    rect.y = (int)y;
-    rect.w = (int)w;
-    rect.h = (int)h;
-}
-
-bool pointInRect(SDL_Rect rect, int &x, int &y) {
-    if((x >= rect.x && x <= rect.x+rect.w) && (y >= rect.y && y <= rect.y+rect.h))
-        return true;
-    return false;
-}
-
 void Game::init(const char* title, int xPos, int yPos, int width, int height){
     menuQueue.push_back(Main);
     if(SDL_Init(SDL_INIT_EVERYTHING) == 0){

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef BOUNCINGBALLS_MENU_H
 #define BOUNCINGBALLS_MENU_H
-#include "Game.h"
+
 #include "Map.h"
 
 enum endMenuMode{Write, Idle};

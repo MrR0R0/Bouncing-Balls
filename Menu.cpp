@@ -379,7 +379,7 @@ void PlayMenu::setAngle(int &xMouse, int &yMouse){
 }
 
 void PlayMenu::init(){
-    map.generateRandomMap();
+    generateRandomMap();
     map.LoadMap();
     setRectWithCenter(cannonRect, 300, 750, 75, 115);
     setRectWithCenter(barRect, 300, 630, 600, 5);
@@ -511,10 +511,7 @@ void EndMenu::handleEvents(SDL_Event event) {
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
-            if(pointInRect(backRect, x_mouse, y_mouse)){
-                redirect = true;
-            }
-            else if(pointInRect(tickRect, x_mouse, y_mouse)){
+            if(pointInRect(backRect, x_mouse, y_mouse) || pointInRect(tickRect, x_mouse, y_mouse)) {
                 redirect = true;
             }
             else if(pointInRect(fullTextRect, x_mouse, y_mouse))

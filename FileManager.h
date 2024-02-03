@@ -1,7 +1,7 @@
 #pragma once
 #ifndef BOUNCINGBALLS_FILEMANAGER_H
 #define BOUNCINGBALLS_FILEMANAGER_H
-#include "Game.h"
+#include "Utility.h"
 
 class FileManager{
     public:

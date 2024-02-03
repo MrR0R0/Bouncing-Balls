@@ -2,42 +2,46 @@
 #ifndef BOUNCINGBALLS_MAP_H
 #define BOUNCINGBALLS_MAP_H
 
-#include "Game.h"
 #include "MapCell.h"
 
 class Map{
 public:
+    static int cellNumber;
+    int initialY = -500;
+
     void LoadMap();
     void render();
     void update();
     void destroy();
+
+    //cell related functions/variables
+    std::vector<Cell> map;
+    static std::set<std::pair<int, int>> nonEmptyCells;
+
+    //ball related functions/variables
+    void addShootingBall(const double &angle, SDL_Rect &cannonRect);
+    bool passedTheBar(int yBar) const;
+    static std::vector<Ball> fallingBalls;
+    std::vector<Ball> shootingBall;
+
+private:
+    //cell related functions/variables
+    static bool areLoose(std::set<std::pair<int, int>> &);
+    static std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
+    static bool inMap(int x, int y);
     void getSameColorNeighbors(int x, int y);
     void getNonEmptyNeighbors(int, int);
-    void removeInvisibleBalls();
-    void addShootingBall(const double &angle, SDL_Rect &cannonRect);
-    void updateShootingBall();
     void checkBallForFall(int x, int y);
-    bool passedTheBar(int yBar) const;
     int closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> c);
-    static std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
-    void dropLooseBalls();
-    void generateRandomMap();
-    static bool inMap(int x, int y);
-    static bool inScreen(double &y);
-    static std::vector<Ball> fallingBalls;
-    static std::set<std::pair<int, int>> nonEmptyCells;
-    std::set<std::pair<int, int>> aboutToFall;
-    static std::set<std::pair<int, int>> sameColorNeighbors;
-    static bool areLoose(std::set<std::pair<int, int>> &);
-    static std::set<std::pair<int, int>> nonEmptyNeighbors;
-    std::vector<Ball> shootingBall;
-    static int cellNumber;
-    int initialY = -500;
-    std::vector<Cell> map;
-private:
     std::set<std::pair<int, int>> nonEmptyCellsCopy;
     std::set<std::pair<int, int>> checkedBalls;
+    std::set<std::pair<int, int>> vacatedCells;
+
+    //ball related functions/variables
     std::vector<Ball> fallingBallsCopy;
+    void removeInvisibleBalls();
+    void dropLooseBalls();
+    void updateShootingBall();
 };
 
 #endif //BOUNCINGBALLS_MAP_H

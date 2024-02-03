@@ -120,19 +120,6 @@ bool Ball::outOfScreen() const{
     return false;
 }
 
-std::vector<int> Ball::decodeColor(int c){
-    std::set<int> colors = {1, 2, 4, 8, 16};
-    if(colors.find(c) != colors.end())
-        return {c, -1};
-
-    for(int c1=1; c1<=c/2+1; c1*=2){
-        if(colors.find(c - c1) != colors.end()){
-            return {c1, c-c1};
-        }
-    }
-    return {-1, -1};
-}
-
 bool Ball::haveTheSameColor(int anotherColor){
     for(int i : decodeColor(color%32)){
         for(int j : decodeColor(anotherColor%32)){
