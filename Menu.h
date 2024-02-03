@@ -3,8 +3,8 @@
 #define BOUNCINGBALLS_MENU_H
 
 #include "Map.h"
-
-enum endMenuMode{Write, Idle};
+#include "TextureManager.h"
+#include "Paths.h"
 
 class MainMenu{
     public:
@@ -30,8 +30,8 @@ class SettingsMenu{
         void render();
         void handleEvents(SDL_Event event) const;
         SDL_Rect background1Rect, background2Rect, background3Rect, ball1Rect, ball2Rect, ball3Rect,
-                backgroundRect, ballRect;
-        SDL_Texture *theme1Pic, *theme2Pic, *theme3Pic, *ball1Pic, *ball2Pic, *ball3Pic,
+                backgroundMessageRect, ballMessageRect;
+        SDL_Texture *background1Pic, *background2Pic, *background3Pic, *ball1Pic, *ball2Pic, *ball3Pic,
                     *backgroundMessage, *ballMessage;
 };
 
@@ -41,10 +41,12 @@ class SoundMenu{
         void render();
         void handleEvents(SDL_Event event);
         static void loadMusic(const char *path);
-        bool isMute;
-        int prevVolume;
-        SDL_Rect soundBarRect, soundMessageRect, soundRect, theme1Rect,theme2Rect, theme3Rect, musicRect, speakerRect;
-        SDL_Texture *soundMessage, *theme1Message, *theme2Message, *theme3Message, *musicMessage, *speakerPic;
+        static bool isMute;
+        static int prevVolume;
+        static SDL_Rect soundBarRect, soundRect;
+        static SDL_Texture *speakerPic;
+        SDL_Rect volumeMessageRect, theme1Rect, theme2Rect, theme3Rect, musicRect, speakerRect;
+        SDL_Texture *volumeMessage, *theme1Message, *theme2Message, *theme3Message, *musicMessage;
 };
 
 class ScoreMenu{
@@ -68,8 +70,8 @@ class PlayMenu{
         void update();
         void setAngle(int &x, int &y);
         Uint32 lastTick;
-        SDL_Rect cannonRect, barRect, messageRect;
-        SDL_Texture *cannonPic, *textMessage;
+        SDL_Rect cannonRect, barRect, messageRect, pauseMenuRect;
+        SDL_Texture *cannonPic, *textMessage, *pauseMenuPic;
         Map map;
     private:
         double angle;
@@ -91,4 +93,23 @@ class EndMenu{
         const Uint8 *keyStates;
         endMenuMode endMode;
 };
+
+class PauseMenu{
+public:
+    void init();
+    void render();
+    void handleEvents(SDL_Event event);
+    static SDL_Rect soundRect, soundBarRect;
+    static SDL_Texture *speakerPic;
+    SDL_Rect background1Rect, background2Rect, background3Rect,
+            pauseMessageRect, backgroundMessageRect;
+    SDL_Texture *background1Pic, *background2Pic, *background3Pic,
+            *pauseMessage, *backgroundMessage;
+
+    SDL_Rect theme1Rect,theme2Rect, theme3Rect, musicRect, speakerRect;
+    SDL_Texture *theme1Message, *theme2Message, *theme3Message, *musicMessage;
+};
+
+
+
 #endif //BOUNCINGBALLS_MENU_H

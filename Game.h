@@ -4,10 +4,6 @@
 
 #include "Menu.h"
 
-enum menuModes{Main, Modes, Settings, Sound, Score, Play, End};
-enum gameModes{Infinity, Random, Countdown};
-enum ballThemes{Bowling, Glass, Marble};
-
 class Game{
     public:
         void init(const char* title, int xPos, int yPos, int width, int height);

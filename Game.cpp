@@ -12,6 +12,7 @@ SoundMenu soundMenu;
 ScoreMenu scoreMenu;
 PlayMenu playMenu;
 EndMenu endMenu;
+PauseMenu pauseMenu;
 
 SDL_Renderer *Game::renderer = nullptr;
 SDL_Texture *Game::background = nullptr;
@@ -53,6 +54,7 @@ void Game::init(const char* title, int xPos, int yPos, int width, int height){
     playMenu.init();
     scoreMenu.init();
     endMenu.init();
+    pauseMenu.init();
 }
 
 menuModes Game::lastMenu() {
@@ -86,6 +88,9 @@ void Game::handleEvents() {
             break;
         case End:
             endMenu.handleEvents(event);
+            break;
+        case Pause:
+            pauseMenu.handleEvents(event);
             break;
     }
 }
@@ -127,6 +132,9 @@ void Game::render() {
             break;
         case End:
             endMenu.render();
+            break;
+        case Pause:
+            pauseMenu.render();
             break;
     }
     SDL_RenderPresent(renderer);

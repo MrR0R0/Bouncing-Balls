@@ -1,7 +1,4 @@
 const char* backPicPath = "..\\assets\\back_arrow.png";
-const char* music1Path = "..\\assets\\ice_dance.mp3";
-const char* music2Path = "..\\assets\\mario.mp3";
-const char* music3Path = "..\\assets\\castle.mp3";
 const char* countdownScoresPath = "..\\scores\\countdown.txt";
 const char* infinityScoresPath = "..\\scores\\infinity.txt";
 const char* randomScoresPath = "..\\scores\\random.txt";
@@ -12,6 +9,7 @@ const char* cogPicPath = "..\\assets\\cog.png";
 const char* musicalNotePicPath = "..\\assets\\musical_note.png";
 const char* cannonPicPath = "..\\assets\\cannon.png";
 const char* lockPicPath = "..\\assets\\lock.png";
+const char* pausePicPath = "..\\assets\\pause.png";
 
 //Ball Pics
 const char* blueBallPicPath = "\\blue.png";
@@ -36,6 +34,10 @@ const char* background1Path = R"(..\assets\background\theme1.jpg)";
 const char* background2Path = R"(..\assets\background\theme2.jpg)";
 const char* background3Path = R"(..\assets\background\theme3.jpg)";
 
-
 //generated map
 const char* generatedMapPath = "..\\random.txt";
+
+//Music
+const char* music1Path = R"(..\assets\music\undertale.mp3)";
+const char* music2Path = R"(..\assets\music\white_lady.mp3)";
+const char* music3Path = R"(..\assets\music\suika.mp3)";

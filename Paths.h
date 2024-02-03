@@ -15,6 +15,7 @@ extern const char* cogPicPath;
 extern const char* musicalNotePicPath;
 extern const char* cannonPicPath;
 extern const char* lockPicPath;
+extern const char* pausePicPath;
 
 //Ball Pics
 extern const char* blueBallPicPath;
