@@ -10,6 +10,12 @@ SDL_Rect PauseMenu::soundRect, PauseMenu::soundBarRect;
 SDL_Rect SoundMenu::soundRect, SoundMenu::soundBarRect;
 SDL_Texture *SoundMenu::speakerPic, *PauseMenu::speakerPic;
 
+Uint32 PlayMenu::lastTick;
+SDL_Rect PlayMenu::cannonRect, PlayMenu::barRect, PlayMenu::messageRect, PlayMenu::pauseMenuRect;
+SDL_Texture *PlayMenu::cannonPic, *PlayMenu::textMessage, *PlayMenu::pauseMenuPic;
+Map PlayMenu::map;
+
+
 int SoundMenu::prevVolume;
 bool SoundMenu::isMute;
 
@@ -57,6 +63,7 @@ void MainMenu::handleEvents(SDL_Event event) const{
             if(pointInRect(scoreRect, x_mouse, y_mouse))
                 Game::menuQueue.push_back(Score);
             else if(pointInRect(startRect, x_mouse, y_mouse)) {
+                PlayMenu::init();
                 Game::menuQueue.push_back(Play);
             }
             else if(pointInRect(modeRect, x_mouse, y_mouse))
@@ -306,7 +313,7 @@ void ScoreMenu::setScores(const char* path) {
     int max_char = 10;
     std::string name;
     scores = FileManager::getTopTen(path);
-    for(int i=0; i<std::min((int)scores.size(), max_char); i++){
+    for(int i=0; i<std::min((int)scores.size(), 10); i++){
         name = scores[i].second;
         if(scores[i].second.size()>10) name = scores[i].second.substr(0, max_char) + "...";
         setRectWithCenter(scoresRect[i], 450, 50*(i+6), (int)std::to_string(scores[i].first).size()*15, 50);
@@ -317,7 +324,7 @@ void ScoreMenu::setScores(const char* path) {
 }
 
 void ScoreMenu::renderScores(){
-    for(int i=0; i<scores.size(); i++){
+    for(int i=0; i<std::min((int)scores.size(), 10); i++){
         SDL_RenderCopy(Game::renderer, scoresMessage[i], nullptr, &scoresRect[i]);
         SDL_RenderCopy(Game::renderer, namesMessage[i], nullptr, &namesRect[i]);
     }
@@ -422,7 +429,6 @@ void PlayMenu::handleEvents(SDL_Event event) {
         case SDL_MOUSEBUTTONDOWN:
             if(pointInRect(backRect, x_mouse, y_mouse)){
                 map.destroy();
-                init();
                 Game::menuQueue.pop_back();
                 Game::score = 0;
             }
@@ -445,9 +451,7 @@ void PlayMenu::update(){
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
         SDL_RenderPresent(Game::renderer);
         map.destroy();
-        init();
         SDL_Delay(2000);
-        init();
         if(!Game::menuQueue.empty())
             Game::menuQueue.pop_back();
         Game::menuQueue.push_back(End);
@@ -518,6 +522,7 @@ void EndMenu::update() {
         SDL_Delay(1500);
         Game::menuQueue.pop_back();
         Game::score = 0;
+        PlayMenu::map.destroy();
         init();
     }
 }

@@ -64,15 +64,15 @@ class ScoreMenu{
 
 class PlayMenu{
     public:
-        void init();
+        static void init();
         void render();
         void handleEvents(SDL_Event event);
         void update();
         void setAngle(int &x, int &y);
-        Uint32 lastTick;
-        SDL_Rect cannonRect, barRect, messageRect, pauseMenuRect;
-        SDL_Texture *cannonPic, *textMessage, *pauseMenuPic;
-        Map map;
+        static Uint32 lastTick;
+        static SDL_Rect cannonRect, barRect, messageRect, pauseMenuRect;
+        static SDL_Texture *cannonPic, *textMessage, *pauseMenuPic;
+        static Map map;
     private:
         double angle;
 };
