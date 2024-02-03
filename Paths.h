@@ -18,6 +18,7 @@ extern const char* lockPicPath;
 extern const char* pausePicPath;
 
 //Ball Pics
+extern const char* blackBallPicPath;
 extern const char* blueBallPicPath;
 extern const char* redBallPicPath;
 extern const char* greenBallPicPath;

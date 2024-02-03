@@ -13,54 +13,59 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
     vx_cent = vx;
     vy_cent = vy;
     std::string path, child;
-    switch (color%32) {
-        case 1:
-            child = redBallPicPath;
-            break;
-        case 2:
-            child = greenBallPicPath;
-            break;
-        case 4:
-            child = blueBallPicPath;
-            break;
-        case 8:
-            child = yellowBallPicPath;
-            break;
-        case 16:
-            child = purpleBallPicPath;
-            break;
-        case 3:
-            child = redGreenBallPicPath;
-            break;
-        case 5:
-            child = redBlueBallPicPath;
-            break;
-        case 9:
-            child = redYellowBallPicPath;
-            break;
-        case 17:
-            child = redPurpleBallPicPath;
-            break;
-        case 6:
-            child = greenBlueBallPicPath;
-            break;
-        case 10:
-            child = greenYellowBallPicPath;
-            break;
-        case 18:
-            child = greenPurpleBallPicPath;
-            break;
-        case 12:
-            child = blueYellowBallPicPath;
-            break;
-        case 20:
-            child = bluePurpleBallPicPath;
-            break;
-        case 24:
-            child = yellowPurpleBallPicPath;
-            break;
-        default:
-            break;
+    if(c==-1){
+        child = blackBallPicPath;
+    }
+    else {
+        switch (color % 32) {
+            case 1:
+                child = redBallPicPath;
+                break;
+            case 2:
+                child = greenBallPicPath;
+                break;
+            case 4:
+                child = blueBallPicPath;
+                break;
+            case 8:
+                child = yellowBallPicPath;
+                break;
+            case 16:
+                child = purpleBallPicPath;
+                break;
+            case 3:
+                child = redGreenBallPicPath;
+                break;
+            case 5:
+                child = redBlueBallPicPath;
+                break;
+            case 9:
+                child = redYellowBallPicPath;
+                break;
+            case 17:
+                child = redPurpleBallPicPath;
+                break;
+            case 6:
+                child = greenBlueBallPicPath;
+                break;
+            case 10:
+                child = greenYellowBallPicPath;
+                break;
+            case 18:
+                child = greenPurpleBallPicPath;
+                break;
+            case 12:
+                child = blueYellowBallPicPath;
+                break;
+            case 20:
+                child = bluePurpleBallPicPath;
+                break;
+            case 24:
+                child = yellowPurpleBallPicPath;
+                break;
+            default:
+                break;
+        }
     }
 
     switch (Game::ballTheme){
@@ -74,6 +79,7 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
             path = "..\\assets\\theme3";
             break;
     }
+
     if(color>32){
         lockPic = TextureManager::LoadTexture(lockPicPath);
     }

@@ -12,6 +12,7 @@ const char* lockPicPath = "..\\assets\\lock.png";
 const char* pausePicPath = "..\\assets\\pause.png";
 
 //Ball Pics
+const char* blackBallPicPath = "\\black.png";
 const char* blueBallPicPath = "\\blue.png";
 const char* redBallPicPath = "\\red.png";
 const char* greenBallPicPath = "\\green.png";
