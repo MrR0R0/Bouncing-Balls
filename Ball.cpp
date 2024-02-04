@@ -85,6 +85,7 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
     }
     path += child;
     ballPic = TextureManager::LoadTexture(path.c_str());
+    setRectWithCenter(ballRect, x_cent, y_cent, 60 + cnst, 60 + cnst);
 }
 
 void Ball::render(){
@@ -126,14 +127,6 @@ bool Ball::outOfScreen() const{
     return false;
 }
 
-bool Ball::haveTheSameColor(int anotherColor){
-    if(color==-1 || anotherColor==-1)
-        return false;
-    for(int i : decodeColor(color%32)){
-        for(int j : decodeColor(anotherColor%32)){
-            if(i==j && i!=-1)
-                return true;
-        }
-    }
-    return false;
+void Ball::moveDown(int distance) {
+    y_cent += distance;
 }

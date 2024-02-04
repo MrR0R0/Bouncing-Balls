@@ -26,14 +26,14 @@ public:
     int decideNextBallColor();
     static std::vector<Ball> fallingBalls;
     std::vector<Ball> shootingBall;
-    std::list<int> ballQueue;
+    static std::list<int> ballQueue;
 
 private:
     //cell related functions/variables
     static bool areLoose(std::set<std::pair<int, int>> &);
     static std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
     static bool inMap(int x, int y);
-    void getSameColorNeighbors(int x, int y);
+    void getSameColorNeighbors(int x, int y, int initialColor);
     void getNonEmptyNeighbors(int, int);
     void checkBallForFall(int x, int y);
     int closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> c);

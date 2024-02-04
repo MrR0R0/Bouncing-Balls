@@ -33,5 +33,6 @@ void setRectWithCorner(SDL_Rect &rect, double x, double y, double w, double h);
 
 bool pointInRect(SDL_Rect rect, int &x, int &y);
 
+bool haveTheSameColor(int color1, int color2);
 
 #endif //BOUNCINGBALLS_UTILITY_H

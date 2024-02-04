@@ -4,12 +4,13 @@
 #include "Map.h"
 #include "Paths.h"
 #include "Game.h"
+#define mapSpeed 0.1
 
 std::vector<Ball> Map::fallingBalls;
 std::set<std::pair<int, int>> Map::nonEmptyCells;
-
 std::set<std::pair<int, int>> nonEmptyNeighbors;
 std::set<std::pair<int, int>> sameColorNeighbors;
+std::list<int> Map::ballQueue;
 
 int Map::cellNumber = 180;
 int ind;
@@ -27,10 +28,10 @@ void Map::LoadMap() {
             iss >> colorFromFile;
             cell.ball.clear();
             if (row % 2 == 1) {
-                cell.init(60 * col + 30, 60 * row + 30 + initialY, 0, 0.5);
+                cell.init(60 * col + 30, 60 * row + 30 + initialY, 0, mapSpeed);
             }
             if (row % 2 == 0) {
-                cell.init(60 * col + 60, 60 * row + 30 + initialY, 0, 0.5);
+                cell.init(60 * col + 60, 60 * row + 30 + initialY, 0, mapSpeed);
             }
             if(inMap(row, col) && stoi(colorFromFile) != 0){
                 cell.addBall(stoi(colorFromFile));
@@ -45,16 +46,17 @@ void Map::LoadMap() {
         for(int col=0; col<10; col++){
             cell.ball.clear();
             if (row % 2 == 1) {
-                cell.init(60 * col + 30, 60 * row + 30 + initialY, 0, 0.5);
+                cell.init(60 * col + 30, 60 * row + 30 + initialY, 0, mapSpeed);
             }
             if (row % 2 == 0) {
-                cell.init(60 * col + 60, 60 * row + 30 + initialY, 0, 0.5);
+                cell.init(60 * col + 60, 60 * row + 30 + initialY, 0, mapSpeed);
             }
             map.push_back(cell);
         }
         row++;
     }
     ballQueue.clear();
+    ballQueue.push_back(decideNextBallColor());
     ballQueue.push_back(decideNextBallColor());
 }
 
@@ -68,10 +70,6 @@ void Map::render() {
         i.render();
     for (auto &i: shootingBall)
         i.render();
-
-    //for next ball
-    Ball nextBall(ballQueue.front(), 200, 750, 0, 0);
-    nextBall.render();
 }
 
 void Map::update() {
@@ -129,15 +127,15 @@ std::vector<std::pair<int, int>> Map::immediateNeighbors(int x, int y) {
 }
 
 //also counts the cell itself
-void Map::getSameColorNeighbors(int x, int y) {
+void Map::getSameColorNeighbors(int x, int y, int initialColor) {
     sameColorNeighbors.insert({x, y});
     for (auto &i: immediateNeighbors(x, y)) {
         ind = i.first * 10 + i.second;
         if (!map[ind].empty()) {
-            if (map[ind].ball[0].haveTheSameColor(map[10 * x + y].ball[0].color)) {
+            if (haveTheSameColor(map[ind].ball[0].color, initialColor)) {
                 if (sameColorNeighbors.find(i) == sameColorNeighbors.end()) {
                     sameColorNeighbors.insert(i);
-                    getSameColorNeighbors(i.first, i.second);
+                    getSameColorNeighbors(i.first, i.second,initialColor);
                 }
             }
         }
@@ -243,18 +241,30 @@ int Map::closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> po
 
 void Map::checkBallForFall(int x, int y) {
     sameColorNeighbors.clear();
-    getSameColorNeighbors(x, y);
+    getSameColorNeighbors(x, y, map[x*10 + y].ball[0].color);
     if (sameColorNeighbors.size() > 2) {
         Game::score += 2 * (int)pow(sameColorNeighbors.size(), sameColorNeighbors.size() * 0.05);
         for (auto &i: sameColorNeighbors) {
             if (inMap(i.first, i.second)) {
-                if (map[i.first * 10 + i.second].ball[0].color < 32)
-                    map[i.first * 10 + i.second].dropBall(i.first, i.second);
+                if (map[i.first * 10 + i.second].ball[0].color < 32) {
+                    map[i.first * 10 + i.second].ball.clear();
+                    nonEmptyCells.erase({i.first, i.second});
+                }
                 else
                     map[i.first * 10 + i.second].ball[0].color %= 32;
             }
         }
         dropLooseBalls();
+        double maxHeight = -1e3;
+        for(auto i : nonEmptyCells){
+            ind = i.first * 10 + i.second;
+            maxHeight = maxHeight > map[ind].y_cent ? maxHeight : map[ind].y_cent;
+        }
+        if(maxHeight < 0){
+            for(int i=0; i<cellNumber; i++){
+                map[i].moveDown(-maxHeight);
+            }
+        }
     }
     sameColorNeighbors.clear();
 }
@@ -299,7 +309,7 @@ int Map::decideNextBallColor() {
     cellColor.clear();
     for(auto &i : nonEmptyCells){
         ind = i.first * 10 + i.second;
-        if(!map[ind].empty())
+        if(!map[ind].empty() && !map[ind].ball[0].outOfScreen())
             cellColor.push_back(map[ind].ball[0].color);
     }
     std::mt19937 gen(std::chrono::steady_clock::now().time_since_epoch().count());
@@ -309,8 +319,8 @@ int Map::decideNextBallColor() {
     chance = distribution(gen) ;
     // red , green , blue , yellow , purple
     int x = cellColor.size();
-    if (x > 30 ) {
-        for (int i = x-1 ; i >= x-30 ; i-- ) {
+    if (x > 15 ) {
+        for (int i = x-1 ; i >= x-15 ; i-- ) {
             if (cellColor[i] != -1) {
                 for (int k = 0; k < 5; ++k) {
                     rgb[k] += (cellColor[i] >> k) & 1;

@@ -35,6 +35,12 @@ void Cell::update() {
     y_cent += vy_cent;
 }
 
+void Cell::moveDown(int d){
+    if(!empty())
+        ball[0].moveDown(d);
+    y_cent += d;
+}
+
 void Cell::destroy() {
     ball.clear();
 }

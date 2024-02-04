@@ -16,6 +16,7 @@ class Cell{
         void addBall(int color);
         void dropBall(int x, int y);
         bool empty() const {return ball.empty();};
+        void moveDown(int distance);
         std::vector<Ball> ball;
 };
 

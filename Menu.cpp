@@ -304,7 +304,7 @@ void SoundMenu::loadMusic(const char *path) {
     Game::music = Mix_LoadMUS(path);
     if(Game::music == nullptr)
         std::cout << "Failed to load the music!\n";
-    Mix_PlayMusic(Game::music, -1);
+    //Mix_PlayMusic(Game::music, -1);
     if(isMute)
         Mix_PauseMusic();
 }
@@ -417,10 +417,15 @@ void PlayMenu::render() {
     SDL_RenderCopy(Game::renderer, pauseMenuPic, nullptr, &pauseMenuRect);
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
     SDL_RenderCopyEx(Game::renderer, cannonPic, nullptr, &cannonRect, angle, nullptr, SDL_FLIP_NONE);
+    Ball nextBall(Map::ballQueue.front(), 300, 750, 0, 0);
+    Ball afterNextBall(Map::ballQueue.back(), 200, 750, 0, 0);
+    nextBall.render();
+    afterNextBall.render();
 }
 
 void PlayMenu::handleEvents(SDL_Event event) {
     SDL_GetMouseState(&x_mouse, &y_mouse);
+    keyStates = SDL_GetKeyboardState(nullptr);
     setAngle(x_mouse, y_mouse);
     switch (event.type) {
         case SDL_QUIT:
@@ -438,6 +443,11 @@ void PlayMenu::handleEvents(SDL_Event event) {
             else if(map.shootingBall.empty()){
                 map.addShootingBall(angle, cannonRect);
                 lastTick = SDL_GetTicks();
+            }
+            break;
+        case SDL_KEYDOWN:
+            if(keyStates[SDL_SCANCODE_T]){
+                Map::ballQueue.reverse();
             }
             break;
         default:

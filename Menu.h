@@ -73,6 +73,7 @@ class PlayMenu{
         static SDL_Rect cannonRect, barRect, messageRect, pauseMenuRect;
         static SDL_Texture *cannonPic, *textMessage, *pauseMenuPic;
         static Map map;
+        const Uint8 *keyStates;
     private:
         double angle;
 };

@@ -13,15 +13,16 @@ class Ball{
         void bounce();
         void render();
         void update(double acceleration);
+        void moveDown(int distance);
 
         bool collisionWithCell(double, double);
         bool hitVerticalEdges() const;
         bool outOfScreen() const;
-        bool haveTheSameColor(int color);
 
         std::pair<double, double> coordinate(){return std::make_pair(x_cent, y_cent);};
-    private:
+
         SDL_Rect ballRect;
+    private:
         static SDL_Texture *lockPic;
         double x_cent, y_cent, vx_cent, vy_cent;
         SDL_Texture *ballPic;
