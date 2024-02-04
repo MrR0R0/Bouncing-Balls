@@ -14,6 +14,8 @@ class Ball{
         void render();
         void update(double acceleration);
         void moveDown(int distance);
+        void renderPopFrame(int popFrame);
+        static void initPics();
 
         bool collisionWithCell(double, double);
         bool hitVerticalEdges() const;
@@ -23,7 +25,7 @@ class Ball{
 
         SDL_Rect ballRect;
     private:
-        static SDL_Texture *lockPic;
+        static SDL_Texture *lockPic, *popFrame[3];
         double x_cent, y_cent, vx_cent, vy_cent;
         SDL_Texture *ballPic;
 };

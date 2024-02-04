@@ -3,10 +3,11 @@
 #include "Paths.h"
 
 int Ball::cnst = 6;
-SDL_Texture* Ball::lockPic;
+SDL_Texture* Ball::lockPic, *Ball::popFrame[3];
 SDL_Rect cellRect;
 
 Ball::Ball(int c, double x, double y, double vx, double vy){
+
     color = c;
     x_cent = x;
     y_cent = y;
@@ -79,11 +80,8 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
             path = "..\\assets\\theme3";
             break;
     }
-
-    if(color>32){
-        lockPic = TextureManager::LoadTexture(lockPicPath);
-    }
     path += child;
+
     ballPic = TextureManager::LoadTexture(path.c_str());
     setRectWithCenter(ballRect, x_cent, y_cent, 60 + cnst, 60 + cnst);
 }
@@ -129,4 +127,15 @@ bool Ball::outOfScreen() const{
 
 void Ball::moveDown(int distance) {
     y_cent += distance;
+}
+
+void Ball::renderPopFrame(int i){
+    SDL_RenderCopy(Game::renderer, popFrame[i], nullptr, &ballRect);
+}
+
+void Ball::initPics() {
+    popFrame[0] = TextureManager::LoadTexture(popPic1Path);
+    popFrame[1] = TextureManager::LoadTexture(popPic2Path);
+    popFrame[2] = TextureManager::LoadTexture(popPic3Path);
+    lockPic = TextureManager::LoadTexture(lockPicPath);
 }

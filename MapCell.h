@@ -15,8 +15,10 @@ class Cell{
         //ball related functions/variables
         void addBall(int color);
         void dropBall(int x, int y);
+        void popBall(int x, int y);
         bool empty() const {return ball.empty();};
         void moveDown(int distance);
+        void renderPop(std::pair<int, int> i, int popFrame);
         std::vector<Ball> ball;
 };
 

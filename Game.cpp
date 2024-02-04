@@ -11,7 +11,7 @@ SettingsMenu settingsMenu;
 SoundMenu soundMenu;
 ScoreMenu scoreMenu;
 PlayMenu playMenu;
-EndMenu endMenu;
+static EndMenu endMenu;
 PauseMenu pauseMenu;
 
 SDL_Renderer *Game::renderer = nullptr;
@@ -21,7 +21,7 @@ bool Game::isRunning = true;
 unsigned int Game::score=0;
 gameModes Game::gameMode = Random;
 ballThemes Game::ballTheme = Glass;
-Mix_Music *Game::music = Mix_LoadMUS("..\\assets\\ice_dance.mp3");
+Mix_Music *Game::music = Mix_LoadMUS(music1Path);
 vector<menuModes> Game::menuQueue;
 
 void Game::init(const char* title, int xPos, int yPos, int width, int height){
@@ -53,7 +53,7 @@ void Game::init(const char* title, int xPos, int yPos, int width, int height){
     soundMenu.init();
     playMenu.init();
     scoreMenu.init();
-    endMenu.init();
+    //endMenu.init();
     pauseMenu.init();
 }
 

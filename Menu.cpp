@@ -10,18 +10,34 @@ SDL_Rect PauseMenu::soundRect, PauseMenu::soundBarRect;
 SDL_Rect SoundMenu::soundRect, SoundMenu::soundBarRect;
 SDL_Texture *SoundMenu::speakerPic, *PauseMenu::speakerPic;
 
-Uint32 PlayMenu::lastTick;
-SDL_Rect PlayMenu::cannonRect, PlayMenu::barRect, PlayMenu::messageRect, PlayMenu::pauseMenuRect;
-SDL_Texture *PlayMenu::cannonPic, *PlayMenu::textMessage, *PlayMenu::pauseMenuPic;
+//PlayMenu statics
+Uint32 PlayMenu::initialTick, PlayMenu::finalTick;
+SDL_Rect PlayMenu::cannonRect, PlayMenu::barRect, PlayMenu::messageRect, PlayMenu::pauseMenuRect,
+        PlayMenu::timerRect, PlayMenu::refreshRect;
+SDL_Texture *PlayMenu::cannonPic, *PlayMenu::textMessage, *PlayMenu::pauseMenuPic,
+            *PlayMenu::timerText, *PlayMenu::refreshPic;
+int PlayMenu::startingTime = 40;
 Map PlayMenu::map;
+endGameStatus PlayMenu::status;
 
+//EndMenu statics
+int EndMenu::index;
+bool EndMenu::backspace, EndMenu::del, EndMenu::left, EndMenu::right, EndMenu::redirect;
+std::string EndMenu::text, EndMenu::textCpy, EndMenu::topText, EndMenu::recordText;
+SDL_Rect EndMenu::textRect, EndMenu::fullTextRect, EndMenu::tickRect, EndMenu::topRect,
+        EndMenu::enterNameRect, EndMenu::warningRect, EndMenu::redirectRect, EndMenu::belowTextRect;
+SDL_Texture *EndMenu::textMessage, *EndMenu::tickPic, *EndMenu::topMessage, *EndMenu::enterNameMessage,
+        *EndMenu::warningMessage, *EndMenu::redirectMessage, *EndMenu::belowText;
+const Uint8 *EndMenu::keyStates;
+endMenuMode EndMenu::endMode;
+Mix_Chunk* EndMenu::soundEffect;
 
+//SoundMenu statics
 int SoundMenu::prevVolume;
 bool SoundMenu::isMute;
 
 double dx, dy;
 int x_mouse, y_mouse;
-std::string EndMenu::text, EndMenu::textCpy;
 
 void MainMenu::init(){
     setRectWithCenter(titleRect, 300, 100, 300, 80);
@@ -304,7 +320,7 @@ void SoundMenu::loadMusic(const char *path) {
     Game::music = Mix_LoadMUS(path);
     if(Game::music == nullptr)
         std::cout << "Failed to load the music!\n";
-    //Mix_PlayMusic(Game::music, -1);
+    Mix_PlayMusic(Game::music, -1);
     if(isMute)
         Mix_PauseMusic();
 }
@@ -400,22 +416,29 @@ void PlayMenu::setAngle(int &xMouse, int &yMouse){
 void PlayMenu::init(){
     generateRandomMap();
     map.LoadMap();
+    setRectWithCenter(refreshRect, 200, 670, 50, 50);
     setRectWithCenter(cannonRect, 300, 750, 75, 115);
     setRectWithCenter(barRect, 300, 630, 600, 5);
     setRectWithCenter(messageRect, 300, 350, 300, 80);
     setRectWithCenter(pauseMenuRect, 50, 750, 50, 50);
+    setRectWithCenter(timerRect, 550, 750, 50, 50);
     cannonPic = TextureManager::LoadTexture(cannonPicPath);
     pauseMenuPic = TextureManager::LoadTexture(pausePicPath);
-    textMessage = TextureManager::LoadFont(comicFontPath, 28, "Game Over!", white);
     backPic = TextureManager::LoadTexture(backPicPath);
-    lastTick = SDL_GetTicks();
+    refreshPic = TextureManager::LoadTexture(refreshPicPath);
+    initialTick = SDL_GetTicks();
 }
 
 void PlayMenu::render() {
+    if(Game::gameMode == Countdown){
+        timerText = TextureManager::LoadFont(comicFontPath, 24, std::to_string(startingTime - (finalTick-initialTick)/1000).c_str(), white);
+        SDL_RenderCopy(Game::renderer, timerText, nullptr, &timerRect);
+    }
     SDL_RenderFillRect(Game::renderer, &barRect);
     map.render();
     SDL_RenderCopy(Game::renderer, pauseMenuPic, nullptr, &pauseMenuRect);
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
+    SDL_RenderCopy(Game::renderer, refreshPic, nullptr, &refreshRect);
     SDL_RenderCopyEx(Game::renderer, cannonPic, nullptr, &cannonRect, angle, nullptr, SDL_FLIP_NONE);
     Ball nextBall(Map::ballQueue.front(), 300, 750, 0, 0);
     Ball afterNextBall(Map::ballQueue.back(), 200, 750, 0, 0);
@@ -442,7 +465,6 @@ void PlayMenu::handleEvents(SDL_Event event) {
             }
             else if(map.shootingBall.empty()){
                 map.addShootingBall(angle, cannonRect);
-                lastTick = SDL_GetTicks();
             }
             break;
         case SDL_KEYDOWN:
@@ -456,14 +478,45 @@ void PlayMenu::handleEvents(SDL_Event event) {
 }
 
 void PlayMenu::update(){
+    finalTick = SDL_GetTicks();
     map.update();
     if(map.passedTheBar(barRect.y + barRect.h/2)){
+        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", white);
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
         SDL_RenderPresent(Game::renderer);
         map.destroy();
+        status = Lost;
         SDL_Delay(2000);
         if(!Game::menuQueue.empty())
             Game::menuQueue.pop_back();
+        EndMenu::init();
+        Game::menuQueue.push_back(End);
+    }
+    else if(map.onlyBlackBallsLeft()){
+        if(Game::gameMode == Countdown){
+            Game::score += (int)pow((startingTime - (finalTick-initialTick)), 2) * 10;
+        }
+        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Won!", white);
+        SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
+        SDL_RenderPresent(Game::renderer);
+        map.destroy();
+        status = Won;
+        SDL_Delay(2000);
+        if(!Game::menuQueue.empty())
+            Game::menuQueue.pop_back();
+        EndMenu::init();
+        Game::menuQueue.push_back(End);
+    }
+    if(Game::gameMode == Countdown && (finalTick-initialTick)>= startingTime*1000){
+        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", white);
+        SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
+        SDL_RenderPresent(Game::renderer);
+        map.destroy();
+        status = Lost;
+        SDL_Delay(2000);
+        if(!Game::menuQueue.empty())
+            Game::menuQueue.pop_back();
+        EndMenu::init();
         Game::menuQueue.push_back(End);
     }
 }
@@ -471,23 +524,49 @@ void PlayMenu::update(){
 void EndMenu::init() {
     backspace=false; del=false; left=false; right=false; redirect=false;
     index = 0;
-    topText = "It's over!";
+    Mix_PauseMusic();
+    if(PlayMenu::status == Won) {
+        topText = "Hooray!";
+        soundEffect = Mix_LoadWAV(cheersChunkPath);
+        Mix_PlayChannel(-1, soundEffect, 0);
+    }
+    else{
+        topText = "Maybe next time =D";
+        soundEffect = Mix_LoadWAV(failedChunkPath);
+        Mix_PlayChannel(-1, soundEffect, 0);
+    }
+    if(Game::gameMode == Countdown && PlayMenu::status == Won){
+        recordText = "You have finished in : " + std::to_string(PlayMenu::finalTick-PlayMenu::initialTick) + "ms";
+        belowText = TextureManager::LoadFont(comicFontPath, 22, recordText.c_str(), white);
+        setRectWithCenter(belowTextRect, 300, 225, (int)recordText.length()*15, 50);
+    }
+    if(Game::gameMode == Random){
+        recordText = "You scored : " + std::to_string(Game::score) + " points";
+        belowText = TextureManager::LoadFont(comicFontPath, 22, recordText.c_str(), white);
+        setRectWithCenter(belowTextRect, 300, 225, (int)recordText.length()*15, 50);
+    }
     text="";
-    setRectWithCorner(fullTextRect, 50, 300, 21*20, 50);
-    setRectWithCorner(enterNameRect, 50, 250, 220, 50);
-    setRectWithCenter(topRect, 300, 100, (int)topText.length()*25, 75);
-    setRectWithCorner(tickRect, 500, 300, 50, 50);
-    setRectWithCorner(warningRect, 50, 450, 500, 40);
-    tickPic = TextureManager::LoadTexture("..\\assets\\tick_icon.png");
+    setRectWithCorner(fullTextRect, 50, 350, 21*20, 50);
+    setRectWithCorner(enterNameRect, 50, 300, 220, 50);
+    setRectWithCenter(topRect, 300, 150, (int)topText.length()*25, 75);
+    setRectWithCorner(tickRect, 500, 350, 50, 50);
+    setRectWithCorner(warningRect, 50, 500, 500, 40);
+    tickPic = TextureManager::LoadTexture(tickIconPicPath);
     topMessage = TextureManager::LoadFont(comicFontPath, 28, topText.c_str(), cyan);
     enterNameMessage = TextureManager::LoadFont(comicFontPath, 28, "Enter Your Name:", white);
-    warningMessage = TextureManager::LoadFont(comicFontPath, 20, "*Number of letters should be below 5 and over 19",
+    warningMessage = TextureManager::LoadFont(comicFontPath, 20, "Number of letters should be below 5 and over 19",
                                                 {255, 0, 0});
     backPic = TextureManager::LoadTexture(backPicPath);
     endMode = Idle;
 }
 
 void EndMenu::render(){
+    if(Game::gameMode == Countdown && PlayMenu::status == Won){
+        SDL_RenderCopy(Game::renderer, belowText, nullptr, &belowTextRect);
+    }
+    if(Game::gameMode == Random){
+        SDL_RenderCopy(Game::renderer, belowText, nullptr, &belowTextRect);
+    }
     SDL_RenderCopy(Game::renderer, tickPic, nullptr, &tickRect);
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
     SDL_RenderCopy(Game::renderer, enterNameMessage, nullptr, &enterNameRect);
@@ -533,7 +612,8 @@ void EndMenu::update() {
         Game::menuQueue.pop_back();
         Game::score = 0;
         PlayMenu::map.destroy();
-        init();
+        Mix_FreeChunk(soundEffect);
+        Mix_ResumeMusic();
     }
 }
 
@@ -610,13 +690,13 @@ void EndMenu::handleEvents(SDL_Event event) {
         if(text.length() >= 0) {
             textCpy = text;
             textCpy.insert(index, "_");
-            setRectWithCorner(textRect, 50 + 5, 300, (int)textCpy.length() * 20, 50);
+            setRectWithCorner(textRect, 50 + 5, 350, (int)textCpy.length() * 20, 50);
             textMessage = TextureManager::LoadFont(comicFontPath, 26, textCpy.c_str(), white);
         }
     }
     else if(endMode == Idle){
         if(text.length() >= 0) {
-            setRectWithCorner(textRect, 50 + 5, 300, (int)text.length() * 20, 50);
+            setRectWithCorner(textRect, 50 + 5, 350, (int)text.length() * 20, 50);
             textMessage = TextureManager::LoadFont(comicFontPath, 26, text.c_str(), white);
         }
     }

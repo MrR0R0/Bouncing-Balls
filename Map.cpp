@@ -4,7 +4,7 @@
 #include "Map.h"
 #include "Paths.h"
 #include "Game.h"
-#define mapSpeed 0.1
+#define mapSpeed 0.5
 
 std::vector<Ball> Map::fallingBalls;
 std::set<std::pair<int, int>> Map::nonEmptyCells;
@@ -17,6 +17,8 @@ int ind;
 
 void Map::LoadMap() {
     destroy();
+    Ball::initPics();
+    destructionChunk = Mix_LoadWAV(ballPopChunkPath);
     Cell cell;
     std::ifstream infile(generatedMapPath);
     std::string line, colorFromFile;
@@ -95,6 +97,8 @@ void Map::destroy() {
     shootingBall.clear();
     fallingBalls.clear();
     fallingBallsCopy.clear();
+    Mix_FreeChunk(destructionChunk);
+    destructionChunk = nullptr;
 }
 
 bool Map::inMap(int x, int y) {
@@ -239,16 +243,28 @@ int Map::closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> po
     return distanceIndexPair[0].second;
 }
 
-void Map::checkBallForFall(int x, int y) {
+void Map::checkBallForPoping(int x, int y) {
     sameColorNeighbors.clear();
     getSameColorNeighbors(x, y, map[x*10 + y].ball[0].color);
     if (sameColorNeighbors.size() > 2) {
         Game::score += 2 * (int)pow(sameColorNeighbors.size(), sameColorNeighbors.size() * 0.05);
+
+        //Poping animation
+//        for(int j=0; j<3; j++){
+//            for (auto &i: sameColorNeighbors) {
+//                if (inMap(i.first, i.second) && map[i.first * 10 + i.second].ball[0].color < 32) {
+//                    map[i.first * 10 + i.second].renderPop(i, j);
+//                }
+//            }
+//            SDL_RenderPresent(Game::renderer);
+//            SDL_Delay(50);
+//        }
+
         for (auto &i: sameColorNeighbors) {
             if (inMap(i.first, i.second)) {
                 if (map[i.first * 10 + i.second].ball[0].color < 32) {
-                    map[i.first * 10 + i.second].ball.clear();
-                    nonEmptyCells.erase({i.first, i.second});
+                    Mix_PlayChannel(-1, destructionChunk, 0);
+                    map[i.first*10 + i.second].popBall(i.first, i.second);
                 }
                 else
                     map[i.first * 10 + i.second].ball[0].color %= 32;
@@ -292,7 +308,7 @@ void Map::updateShootingBall() {
         map[closestCellIndex].addBall(shootingBall[0].color);
         shootingBall.clear();
         nonEmptyCells.insert({closestCellIndex / 10, closestCellIndex % 10});
-        checkBallForFall(closestCellIndex / 10, closestCellIndex % 10);
+        checkBallForPoping(closestCellIndex / 10, closestCellIndex % 10);
     }
 }
 
@@ -303,6 +319,14 @@ bool Map::passedTheBar(int yBar) const {
             return true;
     }
     return false;
+}
+
+bool Map::onlyBlackBallsLeft(){
+    for(auto &i: nonEmptyCells){
+        if(map[i.first * 10 + i.second].ball[0].color != -1)
+            return false;
+    }
+    return true;
 }
 
 int Map::decideNextBallColor() {

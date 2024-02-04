@@ -20,6 +20,7 @@ enum menuModes{Main, Modes, Settings, Sound, Score, Play, End, Pause};
 enum gameModes{Infinity, Random, Countdown};
 enum ballThemes{Bowling, Glass, Marble};
 enum endMenuMode{Write, Idle};
+enum endGameStatus{Won, Lost};
 
 std::vector<int> decodeColor(int c);
 

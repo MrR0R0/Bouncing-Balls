@@ -27,6 +27,7 @@ public:
     static std::vector<Ball> fallingBalls;
     std::vector<Ball> shootingBall;
     static std::list<int> ballQueue;
+    bool onlyBlackBallsLeft();
 
 private:
     //cell related functions/variables
@@ -35,7 +36,7 @@ private:
     static bool inMap(int x, int y);
     void getSameColorNeighbors(int x, int y, int initialColor);
     void getNonEmptyNeighbors(int, int);
-    void checkBallForFall(int x, int y);
+    void checkBallForPoping(int x, int y);
     int closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> c);
     std::set<std::pair<int, int>> nonEmptyCellsCopy;
     std::set<std::pair<int, int>> checkedBalls;
@@ -46,6 +47,7 @@ private:
     void removeInvisibleBalls();
     void dropLooseBalls();
     void updateShootingBall();
+    Mix_Chunk* destructionChunk;
 };
 
 #endif //BOUNCINGBALLS_MAP_H

@@ -16,6 +16,8 @@ extern const char* musicalNotePicPath;
 extern const char* cannonPicPath;
 extern const char* lockPicPath;
 extern const char* pausePicPath;
+extern const char* tickIconPicPath;
+extern const char* refreshPicPath;
 
 //Ball Pics
 extern const char* blackBallPicPath;
@@ -35,6 +37,11 @@ extern const char* redPurpleBallPicPath;
 extern const char* redYellowBallPicPath;
 extern const char* yellowPurpleBallPicPath;
 
+//Pop Pics
+extern const char* popPic1Path;
+extern const char* popPic2Path;
+extern const char* popPic3Path;
+
 //backgrounds
 extern const char* background1Path;
 extern const char* background2Path;
@@ -43,4 +50,8 @@ extern const char* background3Path;
 //generated map
 extern const char* generatedMapPath;
 
+//chunks
+extern const char* cheersChunkPath;
+extern const char* failedChunkPath;
+extern const char* ballPopChunkPath;
 #endif //BOUNCINGBALLS_PATHS_H

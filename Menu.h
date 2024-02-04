@@ -69,30 +69,32 @@ class PlayMenu{
         void handleEvents(SDL_Event event);
         void update();
         void setAngle(int &x, int &y);
-        static Uint32 lastTick;
-        static SDL_Rect cannonRect, barRect, messageRect, pauseMenuRect;
-        static SDL_Texture *cannonPic, *textMessage, *pauseMenuPic;
+        static int startingTime;
+        static Uint32 initialTick, finalTick;
+        static SDL_Rect cannonRect, barRect, messageRect, pauseMenuRect, timerRect, refreshRect;
+        static SDL_Texture *cannonPic, *textMessage, *pauseMenuPic, *timerText, *refreshPic;
         static Map map;
         const Uint8 *keyStates;
+        static endGameStatus status;
     private:
         double angle;
 };
 
 class EndMenu{
     public:
-        void init();
+        static void init();
         void render();
         void handleEvents(SDL_Event);
         void update();
         static std::string makeValid(const std::string &);
-        int index=0;
-        bool backspace=false, del=false, left=false, right=false, redirect=false;
-        std::string topText;
-        static std::string text, textCpy;
-        SDL_Rect textRect, fullTextRect, tickRect, topRect, enterNameRect, warningRect, redirectRect;
-        SDL_Texture *textMessage, *tickPic, *topMessage, *enterNameMessage, *warningMessage, *redirectMessage;
-        const Uint8 *keyStates;
-        endMenuMode endMode;
+        static int index;
+        static bool backspace, del, left, right, redirect;
+        static std::string text, textCpy, topText, recordText;
+        static SDL_Rect textRect, fullTextRect, tickRect, topRect, enterNameRect, warningRect, redirectRect, belowTextRect;
+        static SDL_Texture *textMessage, *tickPic, *topMessage, *enterNameMessage, *warningMessage, *redirectMessage, *belowText;
+        static const Uint8 *keyStates;
+        static endMenuMode endMode;
+        static Mix_Chunk* soundEffect;
 };
 
 class PauseMenu{
