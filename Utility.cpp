@@ -141,8 +141,6 @@ bool pointInRect(SDL_Rect rect, int &x, int &y) {
 bool haveTheSameColor(int color1, int color2){
     if(color1==-1 || color2==-1)
         return false;
-    if(color1==64 || color2==64)
-        return true;
     for(int i : decodeColor(color1%32)){
         for(int j : decodeColor(color2%32)){
             if(i==j && i!=-1)

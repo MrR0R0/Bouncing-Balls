@@ -8,7 +8,6 @@ class Ball{
     public:
         Ball(int c, double x, double y, double vx, double vy);
         int color;  // bomb:-3 | trace:-2 | black:-1 | red:1 | green:2 | blue:4 | yellow:8 | purple : 16 | locked : 32
-                    // colorful:64
         static int cnst;
 
         void bounce();

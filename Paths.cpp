@@ -30,7 +30,6 @@ const char* redGreenBallPicPath = "\\red_green.png";
 const char* redPurpleBallPicPath = "\\red_purple.png";
 const char* redYellowBallPicPath = "\\red_yellow.png";
 const char* yellowPurpleBallPicPath = "\\yellow_purple.png";
-const char* colorfulBallPicPath = "..\\assets\\colorful.png";
 const char* bombBallPicPath = "..\\assets\\bomb.png";
 
 //Pop Pics

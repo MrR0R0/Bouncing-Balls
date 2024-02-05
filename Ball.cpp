@@ -18,9 +18,6 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
     if(c==-3){
         path = bombBallPicPath;
     }
-    else if(c==64){
-        path = colorfulBallPicPath;
-    }
     else {
         if(c==-1){
             child = blackBallPicPath;

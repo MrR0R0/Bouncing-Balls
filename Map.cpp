@@ -391,10 +391,7 @@ int Map::decideNextBallColor() {
     std::uniform_int_distribution<> distribution(1, 120);
     int rgb[5]={0,0,0 , 0 , 0 } , chance;
     chance = distribution(gen);
-    if(chance > 117){
-        return 64;
-    }
-    else if(chance > 107){
+    if(chance > 107){
         return -3;
     }
     // red , green , blue , yellow , purple
