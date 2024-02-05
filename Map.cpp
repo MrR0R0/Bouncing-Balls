@@ -4,9 +4,9 @@
 #include "Map.h"
 #include "Paths.h"
 #include "Game.h"
-#define mapSpeed 0.2
+#define mapSpeed 0.5
 
-std::vector<Ball> Map::fallingBalls;
+std::vector<Ball> Map::fallingBalls
 std::set<std::pair<int, int>> Map::nonEmptyCells;
 std::set<std::pair<int, int>> nonEmptyNeighbors;
 std::set<std::pair<int, int>> sameColorNeighbors;
@@ -257,7 +257,7 @@ void Map::checkBallForPoping(int x, int y) {
         for(int j=0; j<3; j++){
             for (auto &i: immediateNeighbors(x, y)) {
                 if (inMap(i.first, i.second) && !map[i.first * 10 + i.second].empty()) {
-                    map[i.first * 10 + i.second].renderBurn(i, j);
+                    map[i.first * 10 + i.second].renderBurn(j);
                 }
             }
             SDL_RenderPresent(Game::renderer);
@@ -282,7 +282,7 @@ void Map::checkBallForPoping(int x, int y) {
         for(int j=0; j<3; j++){
             for (auto &i: sameColorNeighbors) {
                 if (inMap(i.first, i.second) && map[i.first * 10 + i.second].ball[0].color < 32) {
-                    map[i.first * 10 + i.second].renderPop(i, j);
+                    map[i.first * 10 + i.second].renderPop(j);
                 }
             }
             SDL_RenderPresent(Game::renderer);
@@ -306,7 +306,7 @@ void Map::checkBallForPoping(int x, int y) {
         }
         if(maxHeight < 0){
             for(int i=0; i<cellNumber; i++){
-                map[i].moveDown(-maxHeight);
+                map[i].moveDown((int)-maxHeight);
             }
             ceilingHeight += -maxHeight;
         }
@@ -389,14 +389,14 @@ int Map::decideNextBallColor() {
     std::mt19937 gen(std::chrono::steady_clock::now().time_since_epoch().count());
 
     std::uniform_int_distribution<> distribution(1, 120);
-    int rgb[5]={0,0,0 , 0 , 0 } , chance;
+    int rgb[5] = {0,0,0,0,0}, chance;
     chance = distribution(gen);
     if(chance > 107){
         return -3;
     }
     // red , green , blue , yellow , purple
-    int x = cellColor.size();
-    if (x > 15 ) {
+    int x = (int)cellColor.size();
+    if (x > 15) {
         for (int i = x-1 ; i >= x-15 ; i-- ) {
             if (cellColor[i] != -1) {
                 for (int k = 0; k < 5; ++k) {
@@ -429,7 +429,7 @@ int Map::decideNextBallColor() {
             break ;
         }
     }
-    x = pow(2,i) ;
+    x = (int)pow(2,i) ;
     return x;
 }
 

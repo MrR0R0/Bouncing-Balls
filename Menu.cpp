@@ -3,7 +3,6 @@
 
 SDL_Color white = {255, 255, 255};
 SDL_Color cyan = {127,255,212};
-SDL_Color black = {0, 0, 0};
 SDL_Color blue = {45, 19, 191};
 SDL_Color red = {189, 6, 51};
 
@@ -268,7 +267,7 @@ void SoundMenu::render(){
     SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 255);
 }
 
-void SoundMenu::handleEvents(SDL_Event event){
+void SoundMenu::handleEvents(SDL_Event event) const{
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
@@ -432,7 +431,7 @@ void PlayMenu::init(){
     initialTick = SDL_GetTicks();
 }
 
-void PlayMenu::render() {
+void PlayMenu::render() const{
     if(Game::gameMode == Countdown){
         timerText = TextureManager::LoadFont(comicFontPath, 24, std::to_string(startingTime - (finalTick-initialTick)/1000).c_str(), white);
         SDL_RenderCopy(Game::renderer, timerText, nullptr, &timerRect);
@@ -798,7 +797,7 @@ void PauseMenu::render(){
     SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 255);
 }
 
-void PauseMenu::handleEvents(SDL_Event event) {
+void PauseMenu::handleEvents(SDL_Event event) const{
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;

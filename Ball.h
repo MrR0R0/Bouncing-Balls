@@ -7,7 +7,7 @@
 class Ball{
     public:
         Ball(int c, double x, double y, double vx, double vy);
-        int color;  // bomb:-3 | trace:-2 | black:-1 | red:1 | green:2 | blue:4 | yellow:8 | purple : 16 | locked : 32
+        int color;  // bomb:-3 | black:-1 | red:1 | green:2 | blue:4 | yellow:8 | purple : 16 | locked : 32
         static int cnst;
 
         void bounce();
@@ -21,7 +21,7 @@ class Ball{
         bool collisionWithCell(double, double);
         bool hitVerticalEdges() const;
         bool outOfScreen() const;
-        bool passedTheCeiling(double ceilingHeight);
+        bool passedTheCeiling(double ceilingHeight) const;
 
         std::pair<double, double> nextCoordinate(){return std::make_pair(x_cent + vx_cent, y_cent + vy_cent);};
 

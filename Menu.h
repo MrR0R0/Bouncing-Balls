@@ -39,7 +39,7 @@ class SoundMenu{
     public:
         void init();
         void render();
-        void handleEvents(SDL_Event event);
+        void handleEvents(SDL_Event event) const;
         static void loadMusic(const char *path);
         static bool isMute;
         static int prevVolume;
@@ -65,9 +65,9 @@ class ScoreMenu{
 class PlayMenu{
     public:
         static void init();
-        void render();
+        void render() const;
         void handleEvents(SDL_Event event);
-        void update();
+        static void update();
         void setAngle(int &x, int &y);
         static int startingTime;
         static Uint32 initialTick, finalTick;
@@ -83,9 +83,9 @@ class PlayMenu{
 class EndMenu{
     public:
         static void init();
-        void render();
-        void handleEvents(SDL_Event);
-        void update();
+        static void render();
+        static void handleEvents(SDL_Event);
+        static void update();
         static std::string makeValid(const std::string &);
         static int index;
         static bool backspace, del, left, right, redirect;
@@ -101,7 +101,7 @@ class PauseMenu{
 public:
     void init();
     void render();
-    void handleEvents(SDL_Event event);
+    void handleEvents(SDL_Event event) const;
     static SDL_Rect soundRect, soundBarRect;
     static SDL_Texture *speakerPic;
     SDL_Rect background1Rect, background2Rect, background3Rect,

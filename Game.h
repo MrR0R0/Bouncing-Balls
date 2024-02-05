@@ -9,7 +9,7 @@ class Game{
         void init(const char* title, int xPos, int yPos, int width, int height);
         static void handleEvents();
         static void update();
-        void render();
+        static void render();
         void clean();
         static SDL_Texture *background;
         static SDL_Renderer *renderer;

@@ -51,7 +51,7 @@ void Game::init(const char* title, int xPos, int yPos, int width, int height){
     modesMenu.init();
     settingsMenu.init();
     soundMenu.init();
-    playMenu.init();
+    PlayMenu::init();
     scoreMenu.init();
     //endMenu.init();
     pauseMenu.init();

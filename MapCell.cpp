@@ -1,6 +1,5 @@
 #include "MapCell.h"
 #include "Map.h"
-#include "Paths.h"
 
 void Cell::init(double xCent, double yCent, double vxCent, double vyCent) {
     x_cent = xCent;
@@ -52,10 +51,10 @@ void Cell::destroy() {
     ball.clear();
 }
 
-void Cell::renderPop(std::pair<int, int> i, int popFrame){
+void Cell::renderPop(int popFrame){
     ball[0].renderPopFrame(popFrame);
 }
 
-void Cell::renderBurn(std::pair<int, int> i, int burnFrame){
+void Cell::renderBurn(int burnFrame){
     ball[0].renderBurnFrame(burnFrame);
 }

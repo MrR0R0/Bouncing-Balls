@@ -27,7 +27,7 @@ void generateRandomMap() {
     std::uniform_int_distribution<> distribution(1, 200);
     for ( int i = 0; i < 12 ; i++ ) {
         randomcolor1 = distribution(gen);
-        list[i][10] = pow(2,randomcolor1%5) ;
+        list[i][10] = (int)pow(2,randomcolor1%5) ;
     }
     list [0][0] = list [0][1] = list [0][2]  = 2 ;
     list [0][3] = list [0][4] = 16 ;

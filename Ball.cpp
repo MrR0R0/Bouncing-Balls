@@ -7,7 +7,6 @@ SDL_Texture* Ball::lockPic, *Ball::popFrame[3], *Ball::burningFrame[3];
 SDL_Rect cellRect;
 
 Ball::Ball(int c, double x, double y, double vx, double vy){
-
     color = c;
     x_cent = x;
     y_cent = y;
@@ -152,8 +151,8 @@ void Ball::initPics() {
     lockPic = TextureManager::LoadTexture(lockPicPath);
 }
 
-bool Ball::passedTheCeiling(double ceilingHeight){
-    if(y_cent - 30 - cnst/2 <= ceilingHeight){
+bool Ball::passedTheCeiling(double ceilingHeight) const{
+    if(y_cent - 30 - (int)(cnst/2) <= ceilingHeight){
         return true;
     }
     return false;
