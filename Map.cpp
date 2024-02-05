@@ -4,7 +4,7 @@
 #include "Map.h"
 #include "Paths.h"
 #include "Game.h"
-#define mapSpeed 0.4
+#define mapSpeed 0.2
 
 std::vector<Ball> Map::fallingBalls;
 std::set<std::pair<int, int>> Map::nonEmptyCells;
@@ -88,7 +88,7 @@ void Map::update() {
         i.update(2);
     }
     ceilingHeight += mapSpeed;
-    ceilingRect.y = ceilingHeight;
+    ceilingRect.y = (int)ceilingHeight;
     updateShootingBall();
     removeInvisibleBalls();
 }
@@ -271,7 +271,6 @@ void Map::checkBallForPoping(int x, int y) {
         }
         SDL_RenderPresent(Game::renderer);
         map[10*x + y].popBall(x, y);
-        dropLooseBalls();
     }
 
     sameColorNeighbors.clear();
@@ -300,7 +299,6 @@ void Map::checkBallForPoping(int x, int y) {
                     map[i.first * 10 + i.second].ball[0].color %= 32;
             }
         }
-        dropLooseBalls();
         double maxHeight = -1e3;
         for(auto i : nonEmptyCells){
             ind = i.first * 10 + i.second;
@@ -313,6 +311,7 @@ void Map::checkBallForPoping(int x, int y) {
             ceilingHeight += -maxHeight;
         }
     }
+    dropLooseBalls();
     sameColorNeighbors.clear();
 }
 

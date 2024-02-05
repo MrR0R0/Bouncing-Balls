@@ -450,22 +450,6 @@ void PlayMenu::render() {
     nextBall.render();
     afterNextBall.render();
 
-
-    //trace
-    double tmpAngle;
-    tmpAngle = (90 - angle) * M_PI / 180;
-    Ball traceBall(-2,
-                   cannonRect.x + (int) (cannonRect.w / 2) + 1.3 * cannonRect.w / 2 * cos(tmpAngle),
-                   cannonRect.y + (int) (cannonRect.h / 2) - 1.3 * cannonRect.h / 2 * sin(tmpAngle),
-                   30 * cos(tmpAngle),
-                   -30 * sin(tmpAngle));
-    for(int i=0; i<4; i++){
-        traceBall.render();
-        traceBall.update(0);
-        SDL_RenderPresent(Game::renderer);
-    }
-
-
     //End Game
     if(map.passedTheBar(barRect.y + barRect.h/2)){
         SDL_RenderPresent(Game::renderer);

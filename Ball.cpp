@@ -15,10 +15,7 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
     vy_cent = vy;
     std::string path, child;
 
-    if(c==-2){
-        path = traceBallPicPath;
-    }
-    else if(c==-3){
+    if(c==-3){
         path = bombBallPicPath;
     }
     else if(c==64){

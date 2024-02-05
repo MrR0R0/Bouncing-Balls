@@ -38,7 +38,6 @@ extern const char* redYellowBallPicPath;
 extern const char* yellowPurpleBallPicPath;
 extern const char* colorfulBallPicPath;
 extern const char* bombBallPicPath;
-extern const char* traceBallPicPath;
 
 
 //Pop Pics

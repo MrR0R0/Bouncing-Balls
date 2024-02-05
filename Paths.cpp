@@ -32,7 +32,6 @@ const char* redYellowBallPicPath = "\\red_yellow.png";
 const char* yellowPurpleBallPicPath = "\\yellow_purple.png";
 const char* colorfulBallPicPath = "..\\assets\\colorful.png";
 const char* bombBallPicPath = "..\\assets\\bomb.png";
-const char* traceBallPicPath = "..\\assets\\trace.png";
 
 //Pop Pics
 const char* popPic1Path = R"(..\assets\ball_pop\pop1.png)";
