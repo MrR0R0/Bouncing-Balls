@@ -4,6 +4,9 @@
 SDL_Color white = {255, 255, 255};
 SDL_Color cyan = {127,255,212};
 SDL_Color black = {0, 0, 0};
+SDL_Color blue = {45, 19, 191};
+SDL_Color red = {189, 6, 51};
+
 SDL_Rect backRect{50, 50, 50, 50};
 SDL_Texture *backPic;
 SDL_Rect PauseMenu::soundRect, PauseMenu::soundBarRect;
@@ -16,7 +19,7 @@ SDL_Rect PlayMenu::cannonRect, PlayMenu::barRect, PlayMenu::messageRect, PlayMen
         PlayMenu::timerRect, PlayMenu::refreshRect;
 SDL_Texture *PlayMenu::cannonPic, *PlayMenu::textMessage, *PlayMenu::pauseMenuPic,
             *PlayMenu::timerText, *PlayMenu::refreshPic;
-int PlayMenu::startingTime = 40;
+int PlayMenu::startingTime = 10;
 Map PlayMenu::map;
 endGameStatus PlayMenu::status;
 
@@ -448,9 +451,25 @@ void PlayMenu::render() {
     afterNextBall.render();
 
 
+    //trace
+    double tmpAngle;
+    tmpAngle = (90 - angle) * M_PI / 180;
+    Ball traceBall(-2,
+                   cannonRect.x + (int) (cannonRect.w / 2) + 1.3 * cannonRect.w / 2 * cos(tmpAngle),
+                   cannonRect.y + (int) (cannonRect.h / 2) - 1.3 * cannonRect.h / 2 * sin(tmpAngle),
+                   30 * cos(tmpAngle),
+                   -30 * sin(tmpAngle));
+    for(int i=0; i<4; i++){
+        traceBall.render();
+        traceBall.update(0);
+        SDL_RenderPresent(Game::renderer);
+    }
+
+
+    //End Game
     if(map.passedTheBar(barRect.y + barRect.h/2)){
         SDL_RenderPresent(Game::renderer);
-        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", white);
+        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", red);
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
         SDL_RenderPresent(Game::renderer);
         map.destroy();
@@ -467,7 +486,7 @@ void PlayMenu::render() {
         if(Game::gameMode == Countdown){
             Game::score += (int)pow((startingTime - (finalTick-initialTick)), 2) * 10;
         }
-        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Won!", white);
+        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Won!", blue);
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
         SDL_RenderPresent(Game::renderer);
         map.destroy();
@@ -481,7 +500,7 @@ void PlayMenu::render() {
 
     if(Game::gameMode == Countdown && (finalTick-initialTick)>= startingTime*1000){
         SDL_RenderPresent(Game::renderer);
-        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", white);
+        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", red);
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
         SDL_RenderPresent(Game::renderer);
         map.destroy();
@@ -730,7 +749,6 @@ std::string EndMenu::makeValid(const std::string &str) {
     if(rightInd<leftInd)
         return "";
     return str.substr(leftInd, rightInd-leftInd+1);
-
 }
 
 void PauseMenu::init(){

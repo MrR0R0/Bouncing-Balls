@@ -4,7 +4,7 @@
 #include "Map.h"
 #include "Paths.h"
 #include "Game.h"
-#define mapSpeed 0.2
+#define mapSpeed 0.4
 
 std::vector<Ball> Map::fallingBalls;
 std::set<std::pair<int, int>> Map::nonEmptyCells;
@@ -61,6 +61,7 @@ void Map::LoadMap() {
     }
     ballQueue.clear();
     ballQueue.push_back(decideNextBallColor());
+    SDL_Delay(1);
     ballQueue.push_back(decideNextBallColor());
 }
 
@@ -251,21 +252,43 @@ int Map::closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> po
 }
 
 void Map::checkBallForPoping(int x, int y) {
+
+    if(map[10*x + y].ball[0].color == -3){
+        for(int j=0; j<3; j++){
+            for (auto &i: immediateNeighbors(x, y)) {
+                if (inMap(i.first, i.second) && !map[i.first * 10 + i.second].empty()) {
+                    map[i.first * 10 + i.second].renderBurn(i, j);
+                }
+            }
+            SDL_RenderPresent(Game::renderer);
+            SDL_Delay(50);
+        }
+
+        for (auto &i: immediateNeighbors(x, y)) {
+            if (inMap(i.first, i.second) && !map[i.first * 10 + i.second].empty()) {
+                map[i.first * 10 + i.second].popBall(i.first, i.second);
+            }
+        }
+        SDL_RenderPresent(Game::renderer);
+        map[10*x + y].popBall(x, y);
+        dropLooseBalls();
+    }
+
     sameColorNeighbors.clear();
     getSameColorNeighbors(x, y, map[x*10 + y].ball[0].color);
     if (sameColorNeighbors.size() > 2) {
-        Game::score += 2 * (int)pow(sameColorNeighbors.size(), sameColorNeighbors.size() * 0.05);
+        Game::score += 2 * (int)pow(sameColorNeighbors.size(), 2);
 
         //Poping animation
-//        for(int j=0; j<3; j++){
-//            for (auto &i: sameColorNeighbors) {
-//                if (inMap(i.first, i.second) && map[i.first * 10 + i.second].ball[0].color < 32) {
-//                    map[i.first * 10 + i.second].renderPop(i, j);
-//                }
-//            }
-//            SDL_RenderPresent(Game::renderer);
-//            SDL_Delay(50);
-//        }
+        for(int j=0; j<3; j++){
+            for (auto &i: sameColorNeighbors) {
+                if (inMap(i.first, i.second) && map[i.first * 10 + i.second].ball[0].color < 32) {
+                    map[i.first * 10 + i.second].renderPop(i, j);
+                }
+            }
+            SDL_RenderPresent(Game::renderer);
+            SDL_Delay(50);
+        }
 
         for (auto &i: sameColorNeighbors) {
             if (inMap(i.first, i.second)) {
@@ -366,9 +389,15 @@ int Map::decideNextBallColor() {
     }
     std::mt19937 gen(std::chrono::steady_clock::now().time_since_epoch().count());
 
-    std::uniform_int_distribution<> distribution(1, 100)  ;
-    int rgb[5]={0,0,0 , 0 , 0 } , chance  ;
-    chance = distribution(gen) ;
+    std::uniform_int_distribution<> distribution(1, 120);
+    int rgb[5]={0,0,0 , 0 , 0 } , chance;
+    chance = distribution(gen);
+    if(chance > 117){
+        return 64;
+    }
+    else if(chance > 107){
+        return -3;
+    }
     // red , green , blue , yellow , purple
     int x = cellColor.size();
     if (x > 15 ) {

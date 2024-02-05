@@ -24,7 +24,7 @@ void generateRandomMap() {
         }
     }
     std::mt19937 gen(std::chrono::steady_clock::now().time_since_epoch().count());
-    std::uniform_int_distribution<> distribution(1, 100);
+    std::uniform_int_distribution<> distribution(1, 200);
     for ( int i = 0; i < 12 ; i++ ) {
         randomcolor1 = distribution(gen);
         list[i][10] = pow(2,randomcolor1%5) ;
@@ -41,36 +41,36 @@ void generateRandomMap() {
                 chance = distribution(gen);
                 randomcolor1 = distribution(gen);
                 randomcolor2  = distribution(gen);
-                if (chance < 15 && listcheck[i-1][j] ) {
+                if (chance < 30 && listcheck[i-1][j] ) {
                     list [i][j] = list [i-1][j] ;
                 }
-                else if (chance < 30) {
-                    L = (listcheck[i-1][j] >> 5) & 1;
+                else if (chance < 60) {
+                    L = (list[i-1][j] >> 5) & 1;
                     for (int k = 0; k < 5; ++k) {
-                        if ((listcheck[i-1][j] >> k) & 1) {
+                        if ((list[i-1][j] >> k) & 1) {
                             list [i][j] = 32 * L + (1<<k) ;
                             break ;
                         }
                     }
                 }
-                else if (chance < 45 && listcheck[i-1][j+1] ) {
+                else if (chance < 90 && listcheck[i-1][j+1] ) {
                     list [i][j] = list [i-1][j+1] ;
                 }
-                else if (chance < 60) {
-                    L = (listcheck[i-1][j+1] >> 5) & 1  ;
+                else if (chance < 120) {
+                    L = (list[i-1][j+1] >> 5) & 1  ;
 
                     for (int k = 0; k < 5; ++k) {
-                        if ((listcheck[i-1][j+1] >> k) & 1) {
+                        if ((list[i-1][j+1] >> k) & 1) {
                             list [i][j] = 32 * L + (1<<k) ;
                             break ;
                         }
                     }
                 }
-                else if (chance < 70) {
+                else if (chance < 135) {
                     list [i][j] = 32  + (1<<randomcolor1%5);
                 }
 
-                else if (chance < 85 ) {
+                else if (chance < 160 ) {
                     if (randomcolor2%5 == randomcolor1%5 ) {
                         list[i][j] =  (1<<(randomcolor1%5) ) ;
                     }
@@ -141,6 +141,8 @@ bool pointInRect(SDL_Rect rect, int &x, int &y) {
 bool haveTheSameColor(int color1, int color2){
     if(color1==-1 || color2==-1)
         return false;
+    if(color1==64 || color2==64)
+        return true;
     for(int i : decodeColor(color1%32)){
         for(int j : decodeColor(color2%32)){
             if(i==j && i!=-1)

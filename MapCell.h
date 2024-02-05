@@ -19,6 +19,7 @@ class Cell{
         bool empty() const {return ball.empty();};
         void moveDown(int distance);
         void renderPop(std::pair<int, int> i, int popFrame);
+        void renderBurn(std::pair<int, int> i, int burnFrame);
         std::vector<Ball> ball;
 };
 

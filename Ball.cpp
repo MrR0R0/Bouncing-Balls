@@ -3,7 +3,7 @@
 #include "Paths.h"
 
 int Ball::cnst = 6;
-SDL_Texture* Ball::lockPic, *Ball::popFrame[3];
+SDL_Texture* Ball::lockPic, *Ball::popFrame[3], *Ball::burningFrame[3];
 SDL_Rect cellRect;
 
 Ball::Ball(int c, double x, double y, double vx, double vy){
@@ -14,73 +14,84 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
     vx_cent = vx;
     vy_cent = vy;
     std::string path, child;
-    if(c==-1){
-        child = blackBallPicPath;
+
+    if(c==-2){
+        path = traceBallPicPath;
+    }
+    else if(c==-3){
+        path = bombBallPicPath;
+    }
+    else if(c==64){
+        path = colorfulBallPicPath;
     }
     else {
-        switch (color % 32) {
-            case 1:
-                child = redBallPicPath;
+        if(c==-1){
+            child = blackBallPicPath;
+        }
+        else{
+            switch (color % 32) {
+                case 1:
+                    child = redBallPicPath;
+                    break;
+                case 2:
+                    child = greenBallPicPath;
+                    break;
+                case 4:
+                    child = blueBallPicPath;
+                    break;
+                case 8:
+                    child = yellowBallPicPath;
+                    break;
+                case 16:
+                    child = purpleBallPicPath;
+                    break;
+                case 3:
+                    child = redGreenBallPicPath;
+                    break;
+                case 5:
+                    child = redBlueBallPicPath;
+                    break;
+                case 9:
+                    child = redYellowBallPicPath;
+                    break;
+                case 17:
+                    child = redPurpleBallPicPath;
+                    break;
+                case 6:
+                    child = greenBlueBallPicPath;
+                    break;
+                case 10:
+                    child = greenYellowBallPicPath;
+                    break;
+                case 18:
+                    child = greenPurpleBallPicPath;
+                    break;
+                case 12:
+                    child = blueYellowBallPicPath;
+                    break;
+                case 20:
+                    child = bluePurpleBallPicPath;
+                    break;
+                case 24:
+                    child = yellowPurpleBallPicPath;
+                    break;
+                default:
+                    break;
+                }
+        }
+        switch (Game::ballTheme){
+            case Glass:
+                path = "..\\assets\\theme1";
                 break;
-            case 2:
-                child = greenBallPicPath;
+            case Marble:
+                path = "..\\assets\\theme2";
                 break;
-            case 4:
-                child = blueBallPicPath;
-                break;
-            case 8:
-                child = yellowBallPicPath;
-                break;
-            case 16:
-                child = purpleBallPicPath;
-                break;
-            case 3:
-                child = redGreenBallPicPath;
-                break;
-            case 5:
-                child = redBlueBallPicPath;
-                break;
-            case 9:
-                child = redYellowBallPicPath;
-                break;
-            case 17:
-                child = redPurpleBallPicPath;
-                break;
-            case 6:
-                child = greenBlueBallPicPath;
-                break;
-            case 10:
-                child = greenYellowBallPicPath;
-                break;
-            case 18:
-                child = greenPurpleBallPicPath;
-                break;
-            case 12:
-                child = blueYellowBallPicPath;
-                break;
-            case 20:
-                child = bluePurpleBallPicPath;
-                break;
-            case 24:
-                child = yellowPurpleBallPicPath;
-                break;
-            default:
+            case Bowling:
+                path = "..\\assets\\theme3";
                 break;
         }
+        path += child;
     }
-
-    switch (Game::ballTheme){
-        case Glass:
-            path = "..\\assets\\theme1";
-            break;
-        case Marble:
-            path = "..\\assets\\theme2";
-            break;
-        case Bowling:
-            path = "..\\assets\\theme3";
-            break;
-    }
-    path += child;
 
     ballPic = TextureManager::LoadTexture(path.c_str());
     setRectWithCenter(ballRect, x_cent, y_cent, 60 + cnst, 60 + cnst);
@@ -89,7 +100,7 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
 void Ball::render(){
     setRectWithCenter(ballRect, x_cent, y_cent, 60 + cnst, 60 + cnst);
     SDL_RenderCopy(Game::renderer, ballPic, nullptr, &ballRect);
-    if(color>32){
+    if(color>32 && color < 64){
         SDL_RenderCopy(Game::renderer, lockPic, nullptr, &ballRect);
     }
 }
@@ -133,10 +144,17 @@ void Ball::renderPopFrame(int i){
     SDL_RenderCopy(Game::renderer, popFrame[i], nullptr, &ballRect);
 }
 
+void Ball::renderBurnFrame(int i){
+    SDL_RenderCopy(Game::renderer, burningFrame[i], nullptr, &ballRect);
+}
+
 void Ball::initPics() {
     popFrame[0] = TextureManager::LoadTexture(popPic1Path);
     popFrame[1] = TextureManager::LoadTexture(popPic2Path);
     popFrame[2] = TextureManager::LoadTexture(popPic3Path);
+    burningFrame[0] = TextureManager::LoadTexture(burnPic1Path);
+    burningFrame[1] = TextureManager::LoadTexture(burnPic2Path);
+    burningFrame[2] = TextureManager::LoadTexture(burnPic3Path);
     lockPic = TextureManager::LoadTexture(lockPicPath);
 }
 

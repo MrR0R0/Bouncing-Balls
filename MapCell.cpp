@@ -55,3 +55,7 @@ void Cell::destroy() {
 void Cell::renderPop(std::pair<int, int> i, int popFrame){
     ball[0].renderPopFrame(popFrame);
 }
+
+void Cell::renderBurn(std::pair<int, int> i, int burnFrame){
+    ball[0].renderBurnFrame(burnFrame);
+}

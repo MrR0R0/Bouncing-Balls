@@ -36,11 +36,20 @@ extern const char* redGreenBallPicPath;
 extern const char* redPurpleBallPicPath;
 extern const char* redYellowBallPicPath;
 extern const char* yellowPurpleBallPicPath;
+extern const char* colorfulBallPicPath;
+extern const char* bombBallPicPath;
+extern const char* traceBallPicPath;
+
 
 //Pop Pics
 extern const char* popPic1Path;
 extern const char* popPic2Path;
 extern const char* popPic3Path;
+
+//Burning Pics
+extern const char* burnPic1Path;
+extern const char* burnPic2Path;
+extern const char* burnPic3Path;
 
 //backgrounds
 extern const char* background1Path;

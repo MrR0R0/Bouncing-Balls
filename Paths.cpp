@@ -30,12 +30,19 @@ const char* redGreenBallPicPath = "\\red_green.png";
 const char* redPurpleBallPicPath = "\\red_purple.png";
 const char* redYellowBallPicPath = "\\red_yellow.png";
 const char* yellowPurpleBallPicPath = "\\yellow_purple.png";
+const char* colorfulBallPicPath = "..\\assets\\colorful.png";
+const char* bombBallPicPath = "..\\assets\\bomb.png";
+const char* traceBallPicPath = "..\\assets\\trace.png";
 
 //Pop Pics
 const char* popPic1Path = R"(..\assets\ball_pop\pop1.png)";
 const char* popPic2Path = R"(..\assets\ball_pop\pop2.png)";
 const char* popPic3Path = R"(..\assets\ball_pop\pop3.png)";
 
+//Burning Pics
+const char* burnPic1Path = R"(..\assets\ball_pop\burn1.png)";
+const char* burnPic2Path = R"(..\assets\ball_pop\burn2.png)";
+const char* burnPic3Path = R"(..\assets\ball_pop\burn3.png)";
 
 //backgrounds
 const char* background1Path = R"(..\assets\background\theme1.jpg)";
