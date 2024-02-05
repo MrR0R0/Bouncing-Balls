@@ -3,10 +3,10 @@
 #include "Paths.h"
 
 int Ball::cnst = 6;
-SDL_Texture* Ball::lockPic, *Ball::popFrame[3], *Ball::burningFrame[3];
+SDL_Texture *Ball::lockPic, *Ball::popFrame[3], *Ball::burningFrame[3];
 SDL_Rect cellRect;
 
-Ball::Ball(int c, double x, double y, double vx, double vy){
+Ball::Ball(int c, double x, double y, double vx, double vy) {
     color = c;
     x_cent = x;
     y_cent = y;
@@ -14,14 +14,12 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
     vy_cent = vy;
     std::string path, child;
 
-    if(c==-3){
+    if (c == -3) {
         path = bombBallPicPath;
-    }
-    else {
-        if(c==-1){
+    } else {
+        if (c == -1) {
             child = blackBallPicPath;
-        }
-        else{
+        } else {
             switch (color % 32) {
                 case 1:
                     child = redBallPicPath;
@@ -70,9 +68,9 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
                     break;
                 default:
                     break;
-                }
+            }
         }
-        switch (Game::ballTheme){
+        switch (Game::ballTheme) {
             case Glass:
                 path = "..\\assets\\theme1";
                 break;
@@ -90,41 +88,41 @@ Ball::Ball(int c, double x, double y, double vx, double vy){
     setRectWithCenter(ballRect, x_cent, y_cent, 60 + cnst, 60 + cnst);
 }
 
-void Ball::render(){
+void Ball::render() {
     setRectWithCenter(ballRect, x_cent, y_cent, 60 + cnst, 60 + cnst);
     SDL_RenderCopy(Game::renderer, ballPic, nullptr, &ballRect);
-    if(color>32 && color < 64){
+    if (color > 32 && color < 64) {
         SDL_RenderCopy(Game::renderer, lockPic, nullptr, &ballRect);
     }
 }
 
-void Ball::update(double acceleration){
+void Ball::update(double acceleration) {
     vy_cent = acceleration + vy_cent < 20 ? acceleration + vy_cent : 20;
     x_cent += vx_cent;
     y_cent += vy_cent;
 }
 
-bool Ball::collisionWithCell(double xCentCell, double yCentCell){
-    setRectWithCenter(cellRect, xCentCell, yCentCell, 60+cnst, 60+cnst);
+bool Ball::collisionWithCell(double xCentCell, double yCentCell) {
+    setRectWithCenter(cellRect, xCentCell, yCentCell, 60 + cnst, 60 + cnst);
     return SDL_HasIntersection(&cellRect, &ballRect);
 }
 
-bool Ball::hitVerticalEdges() const{
-    if(x_cent + vx_cent >= 600 - 30 - (int)(cnst/2))
+bool Ball::hitVerticalEdges() const {
+    if (x_cent + vx_cent >= 600 - 30 - (int) (cnst / 2))
         return true;
-    if(x_cent + vx_cent <= 30 + (int)(cnst/2))
+    if (x_cent + vx_cent <= 30 + (int) (cnst / 2))
         return true;
     return false;
 }
 
-void Ball::bounce(){
+void Ball::bounce() {
     vx_cent *= -1;
 }
 
-bool Ball::outOfScreen() const{
-    if(x_cent < -40 || x_cent > 640)
+bool Ball::outOfScreen() const {
+    if (x_cent < -40 || x_cent > 640)
         return true;
-    if(y_cent < -40 || y_cent > 840)
+    if (y_cent < -40 || y_cent > 840)
         return true;
     return false;
 }
@@ -133,11 +131,11 @@ void Ball::moveDown(int distance) {
     y_cent += distance;
 }
 
-void Ball::renderPopFrame(int i){
+void Ball::renderPopFrame(int i) {
     SDL_RenderCopy(Game::renderer, popFrame[i], nullptr, &ballRect);
 }
 
-void Ball::renderBurnFrame(int i){
+void Ball::renderBurnFrame(int i) {
     SDL_RenderCopy(Game::renderer, burningFrame[i], nullptr, &ballRect);
 }
 
@@ -151,8 +149,8 @@ void Ball::initPics() {
     lockPic = TextureManager::LoadTexture(lockPicPath);
 }
 
-bool Ball::passedTheCeiling(double ceilingHeight) const{
-    if(y_cent - 30 - (int)(cnst/2) <= ceilingHeight){
+bool Ball::passedTheCeiling(double ceilingHeight) const {
+    if (y_cent - 30 - (int) (cnst / 2) <= ceilingHeight) {
         return true;
     }
     return false;

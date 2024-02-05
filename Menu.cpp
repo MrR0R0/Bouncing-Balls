@@ -2,7 +2,7 @@
 #include "FileManager.h"
 
 SDL_Color white = {255, 255, 255};
-SDL_Color cyan = {127,255,212};
+SDL_Color cyan = {127, 255, 212};
 SDL_Color blue = {45, 19, 191};
 SDL_Color red = {189, 6, 51};
 
@@ -17,7 +17,7 @@ Uint32 PlayMenu::initialTick, PlayMenu::finalTick;
 SDL_Rect PlayMenu::cannonRect, PlayMenu::barRect, PlayMenu::messageRect, PlayMenu::pauseMenuRect,
         PlayMenu::timerRect, PlayMenu::refreshRect;
 SDL_Texture *PlayMenu::cannonPic, *PlayMenu::textMessage, *PlayMenu::pauseMenuPic,
-            *PlayMenu::timerText, *PlayMenu::refreshPic;
+        *PlayMenu::timerText, *PlayMenu::refreshPic;
 int PlayMenu::startingTime = 10;
 Map PlayMenu::map;
 endGameStatus PlayMenu::status;
@@ -32,7 +32,7 @@ SDL_Texture *EndMenu::textMessage, *EndMenu::tickPic, *EndMenu::topMessage, *End
         *EndMenu::warningMessage, *EndMenu::redirectMessage, *EndMenu::belowText;
 const Uint8 *EndMenu::keyStates;
 endMenuMode EndMenu::endMode;
-Mix_Chunk* EndMenu::soundEffect;
+Mix_Chunk *EndMenu::soundEffect;
 
 //SoundMenu statics
 int SoundMenu::prevVolume;
@@ -41,7 +41,7 @@ bool SoundMenu::isMute;
 double dx, dy;
 int x_mouse, y_mouse;
 
-void MainMenu::init(){
+void MainMenu::init() {
     setRectWithCenter(titleRect, 300, 100, 300, 80);
     setRectWithCenter(startRect, 300, 250, 100, 50);
     setRectWithCenter(modeRect, 300, 400, 100, 50);
@@ -57,7 +57,7 @@ void MainMenu::init(){
     backPic = TextureManager::LoadTexture(backPicPath);
 }
 
-void MainMenu::render(){
+void MainMenu::render() {
     SDL_SetRenderDrawColor(Game::renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(Game::renderer, &startRect);
     SDL_RenderDrawRect(Game::renderer, &modeRect);
@@ -71,24 +71,23 @@ void MainMenu::render(){
     SDL_RenderCopy(Game::renderer, settingPic, nullptr, &settingRect);
 }
 
-void MainMenu::handleEvents(SDL_Event event) const{
+void MainMenu::handleEvents(SDL_Event event) const {
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
-            if(pointInRect(scoreRect, x_mouse, y_mouse))
+            if (pointInRect(scoreRect, x_mouse, y_mouse))
                 Game::menuQueue.push_back(Score);
-            else if(pointInRect(startRect, x_mouse, y_mouse)) {
+            else if (pointInRect(startRect, x_mouse, y_mouse)) {
                 PlayMenu::init();
                 Game::menuQueue.push_back(Play);
-            }
-            else if(pointInRect(modeRect, x_mouse, y_mouse))
+            } else if (pointInRect(modeRect, x_mouse, y_mouse))
                 Game::menuQueue.push_back(Modes);
-            else if(pointInRect(settingRect, x_mouse, y_mouse))
+            else if (pointInRect(settingRect, x_mouse, y_mouse))
                 Game::menuQueue.push_back(Settings);
-            else if(pointInRect(soundMenuRect, x_mouse, y_mouse))
+            else if (pointInRect(soundMenuRect, x_mouse, y_mouse))
                 Game::menuQueue.push_back(Sound);
             break;
         default:
@@ -96,17 +95,17 @@ void MainMenu::handleEvents(SDL_Event event) const{
     }
 }
 
-void ModeMenu::init(){
-    setRectWithCenter(countdownRect, 300, 250, 9*20, 50);
-    setRectWithCenter(randomRect, 300, 400, 6*20, 50);
-    setRectWithCenter(infinityRect, 300, 550, 8*20, 50);
+void ModeMenu::init() {
+    setRectWithCenter(countdownRect, 300, 250, 9 * 20, 50);
+    setRectWithCenter(randomRect, 300, 400, 6 * 20, 50);
+    setRectWithCenter(infinityRect, 300, 550, 8 * 20, 50);
     countdownMessage = TextureManager::LoadFont(comicFontPath, 26, "Countdown", white);
     randomMessage = TextureManager::LoadFont(comicFontPath, 26, "Random", cyan);
     infinityMessage = TextureManager::LoadFont(comicFontPath, 26, "Infinity", white);
     backPic = TextureManager::LoadTexture(backPicPath);
 }
 
-void ModeMenu::render(){
+void ModeMenu::render() {
     SDL_RenderCopy(Game::renderer, countdownMessage, nullptr, &countdownRect);
     SDL_RenderCopy(Game::renderer, randomMessage, nullptr, &randomRect);
     SDL_RenderCopy(Game::renderer, infinityMessage, nullptr, &infinityRect);
@@ -125,21 +124,19 @@ void ModeMenu::handleEvents(SDL_Event event) {
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
-            if(pointInRect(backRect, x_mouse, y_mouse))
+            if (pointInRect(backRect, x_mouse, y_mouse))
                 Game::menuQueue.pop_back();
-            else if(pointInRect(countdownRect, x_mouse, y_mouse)) {
+            else if (pointInRect(countdownRect, x_mouse, y_mouse)) {
                 Game::gameMode = Countdown;
                 countdownMessage = TextureManager::LoadFont(comicFontPath, 26, "Countdown", cyan);
                 randomMessage = TextureManager::LoadFont(comicFontPath, 26, "Random", white);
                 infinityMessage = TextureManager::LoadFont(comicFontPath, 26, "Infinity", white);
-            }
-            else if(pointInRect(infinityRect, x_mouse, y_mouse)) {
+            } else if (pointInRect(infinityRect, x_mouse, y_mouse)) {
                 Game::gameMode = Infinity;
                 countdownMessage = TextureManager::LoadFont(comicFontPath, 26, "Countdown", white);
                 randomMessage = TextureManager::LoadFont(comicFontPath, 26, "Random", white);
                 infinityMessage = TextureManager::LoadFont(comicFontPath, 26, "Infinity", cyan);
-            }
-            else if(pointInRect(randomRect, x_mouse, y_mouse)) {
+            } else if (pointInRect(randomRect, x_mouse, y_mouse)) {
                 Game::gameMode = Random;
                 countdownMessage = TextureManager::LoadFont(comicFontPath, 26, "Countdown", white);
                 randomMessage = TextureManager::LoadFont(comicFontPath, 26, "Random", cyan);
@@ -151,7 +148,7 @@ void ModeMenu::handleEvents(SDL_Event event) {
     }
 }
 
-void SettingsMenu::init(){
+void SettingsMenu::init() {
     std::string redBallTheme1Path = "..\\assets\\theme1";
     redBallTheme1Path += redBallPicPath;
     std::string greenBallTheme2Path = "..\\assets\\theme2";
@@ -178,7 +175,7 @@ void SettingsMenu::init(){
     backPic = TextureManager::LoadTexture(backPicPath);
 }
 
-void SettingsMenu::render(){
+void SettingsMenu::render() {
     SDL_RenderCopy(Game::renderer, backgroundMessage, nullptr, &backgroundMessageRect);
     SDL_RenderCopy(Game::renderer, ballMessage, nullptr, &ballMessageRect);
     SDL_RenderCopy(Game::renderer, background1Pic, nullptr, &background1Rect);
@@ -195,32 +192,26 @@ void SettingsMenu::render(){
     SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 255);
 }
 
-void SettingsMenu::handleEvents(SDL_Event event) const{
+void SettingsMenu::handleEvents(SDL_Event event) const {
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
-            if(pointInRect(backRect, x_mouse, y_mouse)) {
+            if (pointInRect(backRect, x_mouse, y_mouse)) {
                 Game::menuQueue.pop_back();
-            }
-            else if(pointInRect(background1Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(background1Rect, x_mouse, y_mouse)) {
                 Game::background = TextureManager::LoadTexture(background1Path);
-            }
-            else if(pointInRect(background2Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(background2Rect, x_mouse, y_mouse)) {
                 Game::background = TextureManager::LoadTexture(background2Path);
-            }
-            else if(pointInRect(background3Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(background3Rect, x_mouse, y_mouse)) {
                 Game::background = TextureManager::LoadTexture(background3Path);
-            }
-            else if(pointInRect(ball1Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(ball1Rect, x_mouse, y_mouse)) {
                 Game::ballTheme = Glass;
-            }
-            else if(pointInRect(ball2Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(ball2Rect, x_mouse, y_mouse)) {
                 Game::ballTheme = Marble;
-            }
-            else if(pointInRect(ball3Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(ball3Rect, x_mouse, y_mouse)) {
                 Game::ballTheme = Bowling;
             }
             break;
@@ -235,7 +226,7 @@ void SoundMenu::init() {
     setRectWithCenter(theme3Rect, 500, 600, 100, 50);
     setRectWithCenter(musicRect, 300, 470, 100, 50);
     setRectWithCenter(soundBarRect, 250, 300, 200, 50);
-    setRectWithCenter(soundRect,  250, 300, 200, 50);
+    setRectWithCenter(soundRect, 250, 300, 200, 50);
     setRectWithCenter(speakerRect, 450, 300, 50, 50);
     setRectWithCenter(volumeMessageRect, 300, 150, 150, 70);
     volumeMessage = TextureManager::LoadFont(comicFontPath, 28, "Volume", white);
@@ -249,7 +240,7 @@ void SoundMenu::init() {
     isMute = false;
 }
 
-void SoundMenu::render(){
+void SoundMenu::render() {
     SDL_RenderCopy(Game::renderer, musicMessage, nullptr, &musicRect);
     SDL_RenderCopy(Game::renderer, theme1Message, nullptr, &theme1Rect);
     SDL_RenderCopy(Game::renderer, theme2Message, nullptr, &theme2Rect);
@@ -267,41 +258,35 @@ void SoundMenu::render(){
     SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 255);
 }
 
-void SoundMenu::handleEvents(SDL_Event event) const{
+void SoundMenu::handleEvents(SDL_Event event) const {
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
-            if(pointInRect(soundRect, x_mouse, y_mouse)) {
+            if (pointInRect(soundRect, x_mouse, y_mouse)) {
                 PauseMenu::soundBarRect.w = x_mouse - soundRect.x;
                 soundBarRect.w = x_mouse - soundRect.x;
                 prevVolume = soundBarRect.w;
-                Mix_VolumeMusic((int)((x_mouse - soundRect.x)*128.0/soundRect.w));
-            }
-            else if(pointInRect(backRect, x_mouse, y_mouse)){
+                Mix_VolumeMusic((int) ((x_mouse - soundRect.x) * 128.0 / soundRect.w));
+            } else if (pointInRect(backRect, x_mouse, y_mouse)) {
                 Game::menuQueue.pop_back();
-            }
-            else if(pointInRect(theme1Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(theme1Rect, x_mouse, y_mouse)) {
                 loadMusic(music1Path);
-            }
-            else if(pointInRect(theme2Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(theme2Rect, x_mouse, y_mouse)) {
                 loadMusic(music2Path);
-            }
-            else if(pointInRect(theme3Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(theme3Rect, x_mouse, y_mouse)) {
                 loadMusic(music3Path);
-            }
-            else if(pointInRect(speakerRect, x_mouse, y_mouse)) {
-                if(isMute){
+            } else if (pointInRect(speakerRect, x_mouse, y_mouse)) {
+                if (isMute) {
                     PauseMenu::speakerPic = TextureManager::LoadTexture(unmutePicPath);
                     speakerPic = TextureManager::LoadTexture(unmutePicPath);
                     isMute = false;
                     soundBarRect.w = prevVolume;
                     Mix_ResumeMusic();
-                    Mix_VolumeMusic((int)((soundBarRect.w)*128.0/soundRect.w));
-                }
-                else{
+                    Mix_VolumeMusic((int) ((soundBarRect.w) * 128.0 / soundRect.w));
+                } else {
                     PauseMenu::speakerPic = TextureManager::LoadTexture(mutePicPath);
                     speakerPic = TextureManager::LoadTexture(mutePicPath);
                     isMute = true;
@@ -320,35 +305,36 @@ void SoundMenu::handleEvents(SDL_Event event) const{
 void SoundMenu::loadMusic(const char *path) {
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 1, 2048);
     Game::music = Mix_LoadMUS(path);
-    if(Game::music == nullptr)
+    if (Game::music == nullptr)
         std::cout << "Failed to load the music!\n";
     Mix_PlayMusic(Game::music, -1);
-    if(isMute)
+    if (isMute)
         Mix_PauseMusic();
 }
 
-void ScoreMenu::setScores(const char* path) {
+void ScoreMenu::setScores(const char *path) {
     int max_char = 10;
     std::string name;
     scores = FileManager::getTopTen(path);
-    for(int i=0; i<std::min((int)scores.size(), 10); i++){
+    for (int i = 0; i < std::min((int) scores.size(), 10); i++) {
         name = scores[i].second;
-        if(scores[i].second.size()>10) name = scores[i].second.substr(0, max_char) + "...";
-        setRectWithCenter(scoresRect[i], 450, 50*(i+6), (int)std::to_string(scores[i].first).size()*15, 50);
+        if (scores[i].second.size() > 10) name = scores[i].second.substr(0, max_char) + "...";
+        setRectWithCenter(scoresRect[i], 450, 50 * (i + 6), (int) std::to_string(scores[i].first).size() * 15, 50);
         scoresMessage[i] = TextureManager::LoadFont(comicFontPath, 24, std::to_string(scores[i].first).c_str(), white);
-        setRectWithCorner(namesRect[i], 100, 50 * (i + 6) - 25, (int)(name.size() + 2) * 15, 50);
-        namesMessage[i] = TextureManager::LoadFont(comicFontPath, 24, (std::to_string(i + 1) + ". " + name).c_str(), white);
+        setRectWithCorner(namesRect[i], 100, 50 * (i + 6) - 25, (int) (name.size() + 2) * 15, 50);
+        namesMessage[i] = TextureManager::LoadFont(comicFontPath, 24, (std::to_string(i + 1) + ". " + name).c_str(),
+                                                   white);
     }
 }
 
-void ScoreMenu::renderScores(){
-    for(int i=0; i<std::min((int)scores.size(), 10); i++){
+void ScoreMenu::renderScores() {
+    for (int i = 0; i < std::min((int) scores.size(), 10); i++) {
         SDL_RenderCopy(Game::renderer, scoresMessage[i], nullptr, &scoresRect[i]);
         SDL_RenderCopy(Game::renderer, namesMessage[i], nullptr, &namesRect[i]);
     }
 }
 
-void ScoreMenu::init(){
+void ScoreMenu::init() {
     setRectWithCenter(scoreRect, 300, 100, 250, 70);
     setRectWithCenter(infinityRect, 120, 200, 100, 50);
     setRectWithCenter(countdownRect, 300, 200, 150, 50);
@@ -361,7 +347,7 @@ void ScoreMenu::init(){
     setScores(countdownScoresPath);
 }
 
-void ScoreMenu::render(){
+void ScoreMenu::render() {
     SDL_RenderCopy(Game::renderer, infinityMessage, nullptr, &infinityRect);
     SDL_RenderCopy(Game::renderer, countdownMessage, nullptr, &countdownRect);
     SDL_RenderCopy(Game::renderer, randomMessage, nullptr, &randomRect);
@@ -370,28 +356,26 @@ void ScoreMenu::render(){
     renderScores();
 }
 
-void ScoreMenu::handleEvents(SDL_Event event){
+void ScoreMenu::handleEvents(SDL_Event event) {
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
-            if(pointInRect(backRect, x_mouse, y_mouse)){
+            if (pointInRect(backRect, x_mouse, y_mouse)) {
                 Game::menuQueue.pop_back();
-            }
-            else if(pointInRect(randomRect, x_mouse, y_mouse)){
+            } else if (pointInRect(randomRect, x_mouse, y_mouse)) {
                 setScores(randomScoresPath);
                 infinityMessage = TextureManager::LoadFont(comicFontPath, 24, "infinity", white);
                 randomMessage = TextureManager::LoadFont(comicFontPath, 24, "random", cyan);
                 countdownMessage = TextureManager::LoadFont(comicFontPath, 24, "countdown", white);
-            }
-            else if(pointInRect(infinityRect, x_mouse, y_mouse)){
+            } else if (pointInRect(infinityRect, x_mouse, y_mouse)) {
                 setScores(infinityScoresPath);
                 infinityMessage = TextureManager::LoadFont(comicFontPath, 24, "infinity", cyan);
                 randomMessage = TextureManager::LoadFont(comicFontPath, 24, "random", white);
-                countdownMessage = TextureManager::LoadFont(comicFontPath, 24, "countdown", white);            }
-            else if(pointInRect(countdownRect, x_mouse, y_mouse)){
+                countdownMessage = TextureManager::LoadFont(comicFontPath, 24, "countdown", white);
+            } else if (pointInRect(countdownRect, x_mouse, y_mouse)) {
                 setScores(countdownScoresPath);
                 infinityMessage = TextureManager::LoadFont(comicFontPath, 24, "infinity", white);
                 randomMessage = TextureManager::LoadFont(comicFontPath, 24, "random", white);
@@ -403,19 +387,19 @@ void ScoreMenu::handleEvents(SDL_Event event){
     }
 }
 
-void PlayMenu::setAngle(int &xMouse, int &yMouse){
-    dy = abs(yMouse - (cannonRect.y + cannonRect.h/2));
-    dx = abs(xMouse - (cannonRect.x + cannonRect.w/2));
-    angle = 90 - atan(dy/dx) * 180 / M_PI;
-    if(yMouse > cannonRect.y + cannonRect.h/2)
+void PlayMenu::setAngle(int &xMouse, int &yMouse) {
+    dy = abs(yMouse - (cannonRect.y + cannonRect.h / 2));
+    dx = abs(xMouse - (cannonRect.x + cannonRect.w / 2));
+    angle = 90 - atan(dy / dx) * 180 / M_PI;
+    if (yMouse > cannonRect.y + cannonRect.h / 2)
         angle = 90;
     angle = angle > 70 ? 70 : angle;
-    if(xMouse <= cannonRect.x + cannonRect.w/2) {
+    if (xMouse <= cannonRect.x + cannonRect.w / 2) {
         angle *= -1;
     }
 }
 
-void PlayMenu::init(){
+void PlayMenu::init() {
     generateRandomMap();
     map.LoadMap();
     setRectWithCenter(refreshRect, 200, 670, 50, 50);
@@ -431,9 +415,11 @@ void PlayMenu::init(){
     initialTick = SDL_GetTicks();
 }
 
-void PlayMenu::render() const{
-    if(Game::gameMode == Countdown){
-        timerText = TextureManager::LoadFont(comicFontPath, 24, std::to_string(startingTime - (finalTick-initialTick)/1000).c_str(), white);
+void PlayMenu::render() const {
+    if (Game::gameMode == Countdown) {
+        timerText = TextureManager::LoadFont(comicFontPath, 24,
+                                             std::to_string(startingTime - (finalTick - initialTick) / 1000).c_str(),
+                                             white);
         SDL_RenderCopy(Game::renderer, timerText, nullptr, &timerRect);
     }
     SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 255);
@@ -450,7 +436,7 @@ void PlayMenu::render() const{
     afterNextBall.render();
 
     //End Game
-    if(map.passedTheBar(barRect.y + barRect.h/2)){
+    if (map.passedTheBar(barRect.y + barRect.h / 2)) {
         SDL_RenderPresent(Game::renderer);
         textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", red);
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
@@ -458,16 +444,14 @@ void PlayMenu::render() const{
         map.destroy();
         status = Lost;
         SDL_Delay(2000);
-        if(!Game::menuQueue.empty())
+        if (!Game::menuQueue.empty())
             Game::menuQueue.pop_back();
         EndMenu::init();
         Game::menuQueue.push_back(End);
-    }
-
-    else if(map.onlyBlackBallsLeft()){
+    } else if (map.onlyBlackBallsLeft()) {
         SDL_RenderPresent(Game::renderer);
-        if(Game::gameMode == Countdown){
-            Game::score += (int)pow((startingTime - (finalTick-initialTick)), 2) * 10;
+        if (Game::gameMode == Countdown) {
+            Game::score += (int) pow((startingTime - (finalTick - initialTick)), 2) * 10;
         }
         textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Won!", blue);
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
@@ -475,13 +459,13 @@ void PlayMenu::render() const{
         map.destroy();
         status = Won;
         SDL_Delay(2000);
-        if(!Game::menuQueue.empty())
+        if (!Game::menuQueue.empty())
             Game::menuQueue.pop_back();
         EndMenu::init();
         Game::menuQueue.push_back(End);
     }
 
-    if(Game::gameMode == Countdown && (finalTick-initialTick)>= startingTime*1000){
+    if (Game::gameMode == Countdown && (finalTick - initialTick) >= startingTime * 1000) {
         SDL_RenderPresent(Game::renderer);
         textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", red);
         SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
@@ -489,7 +473,7 @@ void PlayMenu::render() const{
         map.destroy();
         status = Lost;
         SDL_Delay(2000);
-        if(!Game::menuQueue.empty())
+        if (!Game::menuQueue.empty())
             Game::menuQueue.pop_back();
         EndMenu::init();
         Game::menuQueue.push_back(End);
@@ -507,20 +491,18 @@ void PlayMenu::handleEvents(SDL_Event event) {
             Game::isRunning = false;
             break;
         case SDL_MOUSEBUTTONDOWN:
-            if(pointInRect(backRect, x_mouse, y_mouse)){
+            if (pointInRect(backRect, x_mouse, y_mouse)) {
                 map.destroy();
                 Game::menuQueue.pop_back();
                 Game::score = 0;
-            }
-            else if(pointInRect(pauseMenuRect, x_mouse, y_mouse)){
+            } else if (pointInRect(pauseMenuRect, x_mouse, y_mouse)) {
                 Game::menuQueue.emplace_back(Pause);
-            }
-            else if(map.shootingBall.empty()){
+            } else if (map.shootingBall.empty()) {
                 map.addShootingBall(angle, cannonRect);
             }
             break;
         case SDL_KEYDOWN:
-            if(keyStates[SDL_SCANCODE_T]){
+            if (keyStates[SDL_SCANCODE_T]) {
                 Map::ballQueue.reverse();
             }
             break;
@@ -529,55 +511,58 @@ void PlayMenu::handleEvents(SDL_Event event) {
     }
 }
 
-void PlayMenu::update(){
+void PlayMenu::update() {
     finalTick = SDL_GetTicks();
     map.update();
 }
 
 void EndMenu::init() {
-    backspace=false; del=false; left=false; right=false; redirect=false;
+    backspace = false;
+    del = false;
+    left = false;
+    right = false;
+    redirect = false;
     index = 0;
     Mix_PauseMusic();
-    if(PlayMenu::status == Won) {
+    if (PlayMenu::status == Won) {
         topText = "Hooray!";
         soundEffect = Mix_LoadWAV(cheersChunkPath);
         Mix_PlayChannel(-1, soundEffect, 0);
-    }
-    else{
+    } else {
         topText = "Maybe next time =D";
         soundEffect = Mix_LoadWAV(failedChunkPath);
         Mix_PlayChannel(-1, soundEffect, 0);
     }
-    if(Game::gameMode == Countdown && PlayMenu::status == Won){
-        recordText = "You have finished in : " + std::to_string(PlayMenu::finalTick-PlayMenu::initialTick) + "ms";
+    if (Game::gameMode == Countdown && PlayMenu::status == Won) {
+        recordText = "You have finished in : " + std::to_string(PlayMenu::finalTick - PlayMenu::initialTick) + "ms";
         belowText = TextureManager::LoadFont(comicFontPath, 22, recordText.c_str(), white);
-        setRectWithCenter(belowTextRect, 300, 225, (int)recordText.length()*15, 50);
+        setRectWithCenter(belowTextRect, 300, 225, (int) recordText.length() * 15, 50);
     }
-    if(Game::gameMode == Random){
+    if (Game::gameMode == Random) {
         recordText = "You scored : " + std::to_string(Game::score) + " points";
         belowText = TextureManager::LoadFont(comicFontPath, 22, recordText.c_str(), white);
-        setRectWithCenter(belowTextRect, 300, 225, (int)recordText.length()*15, 50);
+        setRectWithCenter(belowTextRect, 300, 225, (int) recordText.length() * 15, 50);
     }
-    text="";
-    setRectWithCorner(fullTextRect, 50, 350, 21*20, 50);
+    text = "";
+    setRectWithCorner(fullTextRect, 50, 350, 21 * 20, 50);
     setRectWithCorner(enterNameRect, 50, 300, 220, 50);
-    setRectWithCenter(topRect, 300, 150, (int)topText.length()*25, 75);
+    setRectWithCenter(topRect, 300, 150, (int) topText.length() * 25, 75);
     setRectWithCorner(tickRect, 500, 350, 50, 50);
     setRectWithCorner(warningRect, 50, 500, 500, 40);
     tickPic = TextureManager::LoadTexture(tickIconPicPath);
     topMessage = TextureManager::LoadFont(comicFontPath, 28, topText.c_str(), cyan);
     enterNameMessage = TextureManager::LoadFont(comicFontPath, 28, "Enter Your Name:", white);
     warningMessage = TextureManager::LoadFont(comicFontPath, 20, "Number of letters should be below 5 and over 19",
-                                                {255, 0, 0});
+                                              {255, 0, 0});
     backPic = TextureManager::LoadTexture(backPicPath);
     endMode = Idle;
 }
 
-void EndMenu::render(){
-    if(Game::gameMode == Countdown && PlayMenu::status == Won){
+void EndMenu::render() {
+    if (Game::gameMode == Countdown && PlayMenu::status == Won) {
         SDL_RenderCopy(Game::renderer, belowText, nullptr, &belowTextRect);
     }
-    if(Game::gameMode == Random){
+    if (Game::gameMode == Random) {
         SDL_RenderCopy(Game::renderer, belowText, nullptr, &belowTextRect);
     }
     SDL_RenderCopy(Game::renderer, tickPic, nullptr, &tickRect);
@@ -592,11 +577,11 @@ void EndMenu::render(){
 }
 
 void EndMenu::update() {
-    if(redirect){
+    if (redirect) {
         text = makeValid(text);
         SDL_RenderClear(Game::renderer);
         SDL_RenderCopy(Game::renderer, Game::background, nullptr, &Game::backgroundRect);
-        if(text.length()>=5) {
+        if (text.length() >= 5) {
             setRectWithCenter(redirectRect, 300, 400, 400, 50);
             redirectMessage = TextureManager::LoadFont(comicFontPath, 28, "Your Score Was Stored :)",
                                                        white);
@@ -613,8 +598,7 @@ void EndMenu::update() {
                 default:
                     break;
             }
-        }
-        else{
+        } else {
             setRectWithCenter(redirectRect, 300, 400, 400, 50);
             redirectMessage = TextureManager::LoadFont(comicFontPath, 28, "Your Score Was not Stored :(",
                                                        white);
@@ -638,10 +622,9 @@ void EndMenu::handleEvents(SDL_Event event) {
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
-            if(pointInRect(backRect, x_mouse, y_mouse) || pointInRect(tickRect, x_mouse, y_mouse)) {
+            if (pointInRect(backRect, x_mouse, y_mouse) || pointInRect(tickRect, x_mouse, y_mouse)) {
                 redirect = true;
-            }
-            else if(pointInRect(fullTextRect, x_mouse, y_mouse))
+            } else if (pointInRect(fullTextRect, x_mouse, y_mouse))
                 endMode = Write;
             else
                 endMode = Idle;
@@ -649,67 +632,61 @@ void EndMenu::handleEvents(SDL_Event event) {
         default:
             break;
     }
-    if(endMode==Write){
-        if(event.type == SDL_KEYUP){
-            if(left && index>0) {
+    if (endMode == Write) {
+        if (event.type == SDL_KEYUP) {
+            if (left && index > 0) {
                 left = false;
                 index--;
-            }
-            else if(right && index<text.length()){
+            } else if (right && index < text.length()) {
                 right = false;
                 index++;
-            }
-            else if(index>0 && backspace){
-                text.erase(index-1, 1);
+            } else if (index > 0 && backspace) {
+                text.erase(index - 1, 1);
                 index--;
-                backspace=false;
-            }
-            else if(del && index<text.length()){
+                backspace = false;
+            } else if (del && index < text.length()) {
                 text.erase(index, 1);
                 del = false;
             }
-        }
-        else if(event.type == SDL_KEYDOWN) {
+        } else if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
                 case SDLK_BACKSPACE:
-                    if(!text.empty())
+                    if (!text.empty())
                         backspace = true;
                     break;
                 case SDLK_LEFT:
-                    if(index>0)
+                    if (index > 0)
                         left = true;
                     break;
                 case SDLK_RIGHT:
-                    if(index<text.length())
+                    if (index < text.length())
                         right = true;
                     break;
                 case SDLK_DELETE:
-                    if(index<text.length())
+                    if (index < text.length())
                         del = true;
                     break;
             }
         }
-        if(event.type == SDL_TEXTINPUT && text.length()<20){
+        if (event.type == SDL_TEXTINPUT && text.length() < 20) {
             text += event.text.text;
             index++;
-        }
-        else if((keyStates[SDL_SCANCODE_C] && SDL_GetModState()) && KMOD_CTRL)
+        } else if ((keyStates[SDL_SCANCODE_C] && SDL_GetModState()) && KMOD_CTRL)
             SDL_SetClipboardText(text.c_str());
-        else if((keyStates[SDL_SCANCODE_V] && SDL_GetModState()) && KMOD_CTRL) {
+        else if ((keyStates[SDL_SCANCODE_V] && SDL_GetModState()) && KMOD_CTRL) {
             text = SDL_GetClipboardText();
             text = text.substr(0, 20);
-            index = (int)text.length();
+            index = (int) text.length();
         }
-        if(text.length() >= 0) {
+        if (text.length() >= 0) {
             textCpy = text;
             textCpy.insert(index, "_");
-            setRectWithCorner(textRect, 50 + 5, 350, (int)textCpy.length() * 20, 50);
+            setRectWithCorner(textRect, 50 + 5, 350, (int) textCpy.length() * 20, 50);
             textMessage = TextureManager::LoadFont(comicFontPath, 26, textCpy.c_str(), white);
         }
-    }
-    else if(endMode == Idle){
-        if(text.length() >= 0) {
-            setRectWithCorner(textRect, 50 + 5, 350, (int)text.length() * 20, 50);
+    } else if (endMode == Idle) {
+        if (text.length() >= 0) {
+            setRectWithCorner(textRect, 50 + 5, 350, (int) text.length() * 20, 50);
             textMessage = TextureManager::LoadFont(comicFontPath, 26, text.c_str(), white);
         }
     }
@@ -717,24 +694,24 @@ void EndMenu::handleEvents(SDL_Event event) {
 
 std::string EndMenu::makeValid(const std::string &str) {
     int rightInd, leftInd;
-    bool flag=true;
-    for(int i=0; i<str.length() && flag; i++)
-        if(str[i]!=' '){
+    bool flag = true;
+    for (int i = 0; i < str.length() && flag; i++)
+        if (str[i] != ' ') {
             flag = false;
             leftInd = i;
         }
     flag = true;
-    for(int i=(int)(str.length()-1); i>=0 && flag; i--)
-        if(str[i]!=' '){
+    for (int i = (int) (str.length() - 1); i >= 0 && flag; i--)
+        if (str[i] != ' ') {
             flag = false;
             rightInd = i;
         }
-    if(rightInd<leftInd)
+    if (rightInd < leftInd)
         return "";
-    return str.substr(leftInd, rightInd-leftInd+1);
+    return str.substr(leftInd, rightInd - leftInd + 1);
 }
 
-void PauseMenu::init(){
+void PauseMenu::init() {
 
     //Pause
     setRectWithCenter(pauseMessageRect, 300, 70, 230, 75);
@@ -746,7 +723,7 @@ void PauseMenu::init(){
     setRectWithCenter(theme2Rect, 450, 650, 150, 50);
     setRectWithCenter(theme3Rect, 450, 720, 100, 50);
     setRectWithCenter(soundBarRect, 200, 610, 200, 50);
-    setRectWithCenter(soundRect,  200, 610, 200, 50);
+    setRectWithCenter(soundRect, 200, 610, 200, 50);
     setRectWithCenter(speakerRect, 200, 690, 50, 50);
     musicMessage = TextureManager::LoadFont(comicFontPath, 26, "Music", white);
     theme1Message = TextureManager::LoadFont(comicFontPath, 24, "Undertale", white);
@@ -768,7 +745,7 @@ void PauseMenu::init(){
     backPic = TextureManager::LoadTexture(backPicPath);
 }
 
-void PauseMenu::render(){
+void PauseMenu::render() {
     SDL_RenderCopy(Game::renderer, pauseMessage, nullptr, &pauseMessageRect);
     SDL_RenderCopy(Game::renderer, backgroundMessage, nullptr, &backgroundMessageRect);
     SDL_RenderCopy(Game::renderer, pauseMessage, nullptr, &pauseMessageRect);
@@ -797,41 +774,35 @@ void PauseMenu::render(){
     SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 255);
 }
 
-void PauseMenu::handleEvents(SDL_Event event) const{
+void PauseMenu::handleEvents(SDL_Event event) const {
     switch (event.type) {
         case SDL_QUIT:
             Game::isRunning = false;
             break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x_mouse, &y_mouse);
-            if(pointInRect(backRect, x_mouse, y_mouse)){
+            if (pointInRect(backRect, x_mouse, y_mouse)) {
                 Game::menuQueue.pop_back();
-            }
-            else if(pointInRect(soundRect, x_mouse, y_mouse)) {
+            } else if (pointInRect(soundRect, x_mouse, y_mouse)) {
                 soundBarRect.w = x_mouse - soundRect.x;
                 SoundMenu::prevVolume = soundBarRect.w;
                 SoundMenu::soundBarRect.w = x_mouse - soundRect.x;
-                Mix_VolumeMusic((int)((x_mouse - soundRect.x)*128.0/soundRect.w));
-            }
-            else if(pointInRect(background1Rect, x_mouse, y_mouse)) {
-        Game::background = TextureManager::LoadTexture(background1Path);
-    }
-            else if(pointInRect(background2Rect, x_mouse, y_mouse)) {
-        Game::background = TextureManager::LoadTexture(background2Path);
-    }
-            else if(pointInRect(background3Rect, x_mouse, y_mouse)) {
-        Game::background = TextureManager::LoadTexture(background3Path);
-    }
-            else if(pointInRect(speakerRect, x_mouse, y_mouse)) {
-                if(SoundMenu::isMute){
+                Mix_VolumeMusic((int) ((x_mouse - soundRect.x) * 128.0 / soundRect.w));
+            } else if (pointInRect(background1Rect, x_mouse, y_mouse)) {
+                Game::background = TextureManager::LoadTexture(background1Path);
+            } else if (pointInRect(background2Rect, x_mouse, y_mouse)) {
+                Game::background = TextureManager::LoadTexture(background2Path);
+            } else if (pointInRect(background3Rect, x_mouse, y_mouse)) {
+                Game::background = TextureManager::LoadTexture(background3Path);
+            } else if (pointInRect(speakerRect, x_mouse, y_mouse)) {
+                if (SoundMenu::isMute) {
                     SoundMenu::speakerPic = TextureManager::LoadTexture(unmutePicPath);
                     speakerPic = TextureManager::LoadTexture(unmutePicPath);
                     SoundMenu::isMute = false;
                     soundBarRect.w = SoundMenu::prevVolume;
                     Mix_ResumeMusic();
-                    Mix_VolumeMusic((int)((soundBarRect.w)*128.0/soundRect.w));
-                }
-                else{
+                    Mix_VolumeMusic((int) ((soundBarRect.w) * 128.0 / soundRect.w));
+                } else {
                     SoundMenu::speakerPic = TextureManager::LoadTexture(mutePicPath);
                     speakerPic = TextureManager::LoadTexture(mutePicPath);
                     SoundMenu::isMute = true;
@@ -839,14 +810,11 @@ void PauseMenu::handleEvents(SDL_Event event) const{
                     soundBarRect.w = 0;
                     Mix_PauseMusic();
                 }
-            }
-            else if(pointInRect(theme1Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(theme1Rect, x_mouse, y_mouse)) {
                 SoundMenu::loadMusic(music1Path);
-            }
-            else if(pointInRect(theme2Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(theme2Rect, x_mouse, y_mouse)) {
                 SoundMenu::loadMusic(music2Path);
-            }
-            else if(pointInRect(theme3Rect, x_mouse, y_mouse)) {
+            } else if (pointInRect(theme3Rect, x_mouse, y_mouse)) {
                 SoundMenu::loadMusic(music3Path);
             }
             break;

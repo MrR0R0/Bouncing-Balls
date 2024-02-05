@@ -18,28 +18,27 @@ SDL_Renderer *Game::renderer = nullptr;
 SDL_Texture *Game::background = nullptr;
 SDL_Rect Game::backgroundRect;
 bool Game::isRunning = true;
-unsigned int Game::score=0;
+unsigned int Game::score = 0;
 gameModes Game::gameMode = Random;
 ballThemes Game::ballTheme = Glass;
 Mix_Music *Game::music = Mix_LoadMUS(music1Path);
 vector<menuModes> Game::menuQueue;
 
-void Game::init(const char* title, int xPos, int yPos, int width, int height){
+void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     menuQueue.push_back(Main);
-    if(SDL_Init(SDL_INIT_EVERYTHING) == 0){
+    if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
         cout << "Subsystem initialized" << endl;
         window = SDL_CreateWindow(title, xPos, yPos, width, height, 0);
-        if(window){
+        if (window) {
             cout << "window created!" << endl;
         }
         renderer = SDL_CreateRenderer(window, -1, 0);
-        if(renderer){
+        if (renderer) {
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             cout << "renderer created!" << endl;
         }
         isRunning = true;
-    }
-    else {
+    } else {
         isRunning = false;
     }
     backgroundRect.w = 600;
@@ -58,7 +57,7 @@ void Game::init(const char* title, int xPos, int yPos, int width, int height){
 }
 
 menuModes Game::lastMenu() {
-    if(!menuQueue.empty()){
+    if (!menuQueue.empty()) {
         return menuQueue.back();
     }
     return Main;
@@ -67,7 +66,7 @@ menuModes Game::lastMenu() {
 void Game::handleEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
-    switch(lastMenu()){
+    switch (lastMenu()) {
         case Main:
             mainMenu.handleEvents(event);
             break;
@@ -95,8 +94,8 @@ void Game::handleEvents() {
     }
 }
 
-void Game::update(){
-    switch(lastMenu()){
+void Game::update() {
+    switch (lastMenu()) {
         case Play:
             playMenu.update();
             break;
@@ -111,7 +110,7 @@ void Game::update(){
 void Game::render() {
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, background, nullptr, &backgroundRect);
-    switch(lastMenu()){
+    switch (lastMenu()) {
         case Main:
             mainMenu.render();
             break;

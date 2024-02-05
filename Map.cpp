@@ -4,9 +4,10 @@
 #include "Map.h"
 #include "Paths.h"
 #include "Game.h"
-#define mapSpeed 0.5
 
-std::vector<Ball> Map::fallingBalls
+#define mapSpeed 0.2
+
+std::vector<Ball> Map::fallingBalls;
 std::set<std::pair<int, int>> Map::nonEmptyCells;
 std::set<std::pair<int, int>> nonEmptyNeighbors;
 std::set<std::pair<int, int>> sameColorNeighbors;
@@ -25,10 +26,9 @@ void Map::LoadMap() {
     std::ifstream infile(generatedMapPath);
     std::string line, colorFromFile;
     int row = 0;
-    while (std::getline(infile, line))
-    {
+    while (std::getline(infile, line)) {
         std::istringstream iss(line);
-        for(int col=0; col<10; col++){
+        for (int col = 0; col < 10; col++) {
             iss >> colorFromFile;
             cell.ball.clear();
             if (row % 2 == 1) {
@@ -37,7 +37,7 @@ void Map::LoadMap() {
             if (row % 2 == 0) {
                 cell.init(60 * col + 60, 60 * row + 30 + initialY, 0, mapSpeed);
             }
-            if(inMap(row, col) && stoi(colorFromFile) != 0){
+            if (inMap(row, col) && stoi(colorFromFile) != 0) {
                 cell.addBall(stoi(colorFromFile));
                 nonEmptyCells.insert({row, col});
             }
@@ -46,8 +46,8 @@ void Map::LoadMap() {
         row++;
     }
 
-    while(row < cellNumber/10){
-        for(int col=0; col<10; col++){
+    while (row < cellNumber / 10) {
+        for (int col = 0; col < 10; col++) {
             cell.ball.clear();
             if (row % 2 == 1) {
                 cell.init(60 * col + 30, 60 * row + 30 + initialY, 0, mapSpeed);
@@ -88,7 +88,7 @@ void Map::update() {
         i.update(2);
     }
     ceilingHeight += mapSpeed;
-    ceilingRect.y = (int)ceilingHeight;
+    ceilingRect.y = (int) ceilingHeight;
     updateShootingBall();
     removeInvisibleBalls();
 }
@@ -147,7 +147,7 @@ void Map::getSameColorNeighbors(int x, int y, int initialColor) {
             if (haveTheSameColor(map[ind].ball[0].color, initialColor)) {
                 if (sameColorNeighbors.find(i) == sameColorNeighbors.end()) {
                     sameColorNeighbors.insert(i);
-                    getSameColorNeighbors(i.first, i.second,initialColor);
+                    getSameColorNeighbors(i.first, i.second, initialColor);
                 }
             }
         }
@@ -169,7 +169,7 @@ void Map::getNonEmptyNeighbors(int x, int y) {
 bool Map::areLoose(std::set<std::pair<int, int>> &cells) {
     if (cells.empty())
         return false;
-    if (std::all_of(cells.begin(), cells.end(), [](auto i){return i.first>0;}))
+    if (std::all_of(cells.begin(), cells.end(), [](auto i) { return i.first > 0; }))
         return true;
     return false;
 }
@@ -189,7 +189,7 @@ void Map::dropLooseBalls() {
         }
     }
     Game::score += vacatedCells.size() * 10;
-    for(auto &i : vacatedCells){
+    for (auto &i: vacatedCells) {
         map[i.first * 10 + i.second].dropBall(i.first, i.second);
     }
     vacatedCells.clear();
@@ -253,8 +253,8 @@ int Map::closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> po
 
 void Map::checkBallForPoping(int x, int y) {
 
-    if(map[10*x + y].ball[0].color == -3){
-        for(int j=0; j<3; j++){
+    if (map[10 * x + y].ball[0].color == -3) {
+        for (int j = 0; j < 3; j++) {
             for (auto &i: immediateNeighbors(x, y)) {
                 if (inMap(i.first, i.second) && !map[i.first * 10 + i.second].empty()) {
                     map[i.first * 10 + i.second].renderBurn(j);
@@ -270,16 +270,16 @@ void Map::checkBallForPoping(int x, int y) {
             }
         }
         SDL_RenderPresent(Game::renderer);
-        map[10*x + y].popBall(x, y);
+        map[10 * x + y].popBall(x, y);
     }
 
     sameColorNeighbors.clear();
-    getSameColorNeighbors(x, y, map[x*10 + y].ball[0].color);
+    getSameColorNeighbors(x, y, map[x * 10 + y].ball[0].color);
     if (sameColorNeighbors.size() > 2) {
-        Game::score += 2 * (int)pow(sameColorNeighbors.size(), 2);
+        Game::score += 2 * (int) pow(sameColorNeighbors.size(), 2);
 
         //Poping animation
-        for(int j=0; j<3; j++){
+        for (int j = 0; j < 3; j++) {
             for (auto &i: sameColorNeighbors) {
                 if (inMap(i.first, i.second) && map[i.first * 10 + i.second].ball[0].color < 32) {
                     map[i.first * 10 + i.second].renderPop(j);
@@ -293,20 +293,19 @@ void Map::checkBallForPoping(int x, int y) {
             if (inMap(i.first, i.second)) {
                 if (map[i.first * 10 + i.second].ball[0].color < 32) {
                     Mix_PlayChannel(-1, destructionChunk, 0);
-                    map[i.first*10 + i.second].popBall(i.first, i.second);
-                }
-                else
+                    map[i.first * 10 + i.second].popBall(i.first, i.second);
+                } else
                     map[i.first * 10 + i.second].ball[0].color %= 32;
             }
         }
         double maxHeight = -1e3;
-        for(auto i : nonEmptyCells){
+        for (auto i: nonEmptyCells) {
             ind = i.first * 10 + i.second;
             maxHeight = maxHeight > map[ind].y_cent ? maxHeight : map[ind].y_cent;
         }
-        if(maxHeight < 0){
-            for(int i=0; i<cellNumber; i++){
-                map[i].moveDown((int)-maxHeight);
+        if (maxHeight < 0) {
+            for (int i = 0; i < cellNumber; i++) {
+                map[i].moveDown((int) -maxHeight);
             }
             ceilingHeight += -maxHeight;
         }
@@ -339,12 +338,10 @@ void Map::updateShootingBall() {
         shootingBall.clear();
         nonEmptyCells.insert({closestCellIndex / 10, closestCellIndex % 10});
         checkBallForPoping(closestCellIndex / 10, closestCellIndex % 10);
-    }
-
-    else{
-        if(!shootingBall.empty()){
-            if(shootingBall[0].passedTheCeiling(ceilingHeight)){
-                for(int i=0; i<10; i++){
+    } else {
+        if (!shootingBall.empty()) {
+            if (shootingBall[0].passedTheCeiling(ceilingHeight)) {
+                for (int i = 0; i < 10; i++) {
                     if (shootingBall[0].collisionWithCell(map[i].x_cent, map[i].y_cent)) {
                         closestCellIndex = closestEmptyCell({0, i}, shootingBall[0].nextCoordinate());
                         if (closestCellIndex != -1)
@@ -365,15 +362,15 @@ void Map::updateShootingBall() {
 bool Map::passedTheBar(int yBar) const {
     for (auto &i: nonEmptyCells) {
         ind = i.first * 10 + i.second;
-        if (map[ind].y_cent+30 > yBar)
+        if (map[ind].y_cent + 30 > yBar)
             return true;
     }
     return false;
 }
 
-bool Map::onlyBlackBallsLeft(){
-    for(auto &i: nonEmptyCells){
-        if(map[i.first * 10 + i.second].ball[0].color != -1)
+bool Map::onlyBlackBallsLeft() {
+    for (auto &i: nonEmptyCells) {
+        if (map[i.first * 10 + i.second].ball[0].color != -1)
             return false;
     }
     return true;
@@ -381,55 +378,51 @@ bool Map::onlyBlackBallsLeft(){
 
 int Map::decideNextBallColor() {
     cellColor.clear();
-    for(auto &i : nonEmptyCells){
+    for (auto &i: nonEmptyCells) {
         ind = i.first * 10 + i.second;
-        if(!map[ind].empty() && !map[ind].ball[0].outOfScreen())
+        if (!map[ind].empty() && !map[ind].ball[0].outOfScreen())
             cellColor.push_back(map[ind].ball[0].color);
     }
     std::mt19937 gen(std::chrono::steady_clock::now().time_since_epoch().count());
 
     std::uniform_int_distribution<> distribution(1, 120);
-    int rgb[5] = {0,0,0,0,0}, chance;
+    int rgb[5] = {0, 0, 0, 0, 0}, chance;
     chance = distribution(gen);
-    if(chance > 107){
+    if (chance > 107) {
         return -3;
     }
     // red , green , blue , yellow , purple
-    int x = (int)cellColor.size();
+    int x = (int) cellColor.size();
     if (x > 15) {
-        for (int i = x-1 ; i >= x-15 ; i-- ) {
+        for (int i = x - 1; i >= x - 15; i--) {
             if (cellColor[i] != -1) {
                 for (int k = 0; k < 5; ++k) {
                     rgb[k] += (cellColor[i] >> k) & 1;
                 }
             }
         }
-    }
-    else if (x>0) {
-        for (int i = x-1 ; i >= 0 ; i--) {
+    } else if (x > 0) {
+        for (int i = x - 1; i >= 0; i--) {
             if (cellColor[i] != -1) {
                 for (int k = 0; k < 5; ++k) {
                     rgb[k] += (cellColor[i] >> k) & 1;
                 }
             }
         }
-    }
-
-    else {
+    } else {
         return 0;
     }
-    int i  = 0 ;
-    while(true){
-        i ++;
-        i = i % 5 ;
-        if (chance - rgb[i] > 0 ) {
-            chance -= rgb[i] ;
-        }
-        else {
-            break ;
+    int i = 0;
+    while (true) {
+        i++;
+        i = i % 5;
+        if (chance - rgb[i] > 0) {
+            chance -= rgb[i];
+        } else {
+            break;
         }
     }
-    x = (int)pow(2,i) ;
+    x = (int) pow(2, i);
     return x;
 }
 

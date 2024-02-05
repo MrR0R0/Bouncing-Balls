@@ -4,14 +4,17 @@
 
 #include "MapCell.h"
 
-class Map{
+class Map {
 public:
     static int cellNumber;
     int initialY = -500;
 
     void LoadMap();
+
     void render();
+
     void update();
+
     void destroy();
 
     SDL_Rect ceilingRect;
@@ -24,32 +27,46 @@ public:
 
     //ball related functions/variables
     void addShootingBall(const double &angle, SDL_Rect &cannonRect);
+
     bool passedTheBar(int yBar) const;
+
     int decideNextBallColor();
+
     static std::vector<Ball> fallingBalls;
     std::vector<Ball> shootingBall;
     static std::list<int> ballQueue;
+
     bool onlyBlackBallsLeft();
 
 private:
     //cell related functions/variables
     static bool areLoose(std::set<std::pair<int, int>> &);
-    static std::vector<std::pair<int,int>> immediateNeighbors(int x, int y); //row column
+
+    static std::vector<std::pair<int, int>> immediateNeighbors(int x, int y); //row column
     static bool inMap(int x, int y);
+
     void getSameColorNeighbors(int x, int y, int initialColor);
+
     void getNonEmptyNeighbors(int, int);
+
     void checkBallForPoping(int x, int y);
+
     int closestEmptyCell(std::pair<int, int> cell, std::pair<double, double> c);
+
     std::set<std::pair<int, int>> nonEmptyCellsCopy;
     std::set<std::pair<int, int>> checkedBalls;
     std::set<std::pair<int, int>> vacatedCells;
 
     //ball related functions/variables
     std::vector<Ball> fallingBallsCopy;
+
     void removeInvisibleBalls();
+
     void dropLooseBalls();
+
     void updateShootingBall();
-    Mix_Chunk* destructionChunk;
+
+    Mix_Chunk *destructionChunk;
 };
 
 #endif //BOUNCINGBALLS_MAP_H

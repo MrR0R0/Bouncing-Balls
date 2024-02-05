@@ -11,11 +11,11 @@ std::vector<std::pair<unsigned int, std::string>> FileManager::getTopTen(const c
     std::string name, line, temp;
     long long score;
     std::ifstream f(path, std::ios::in);
-    while (std::getline(f, line)){
+    while (std::getline(f, line)) {
         std::istringstream iss(line);
         std::size_t found = line.find(' ');
         iss >> score;
-        name = line.substr(found+1, line.length()-found);
+        name = line.substr(found + 1, line.length() - found);
         topTen.push_back(std::make_pair(score, name));
     }
     f.close();
