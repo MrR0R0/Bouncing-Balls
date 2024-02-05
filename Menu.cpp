@@ -434,7 +434,9 @@ void PlayMenu::render() {
         timerText = TextureManager::LoadFont(comicFontPath, 24, std::to_string(startingTime - (finalTick-initialTick)/1000).c_str(), white);
         SDL_RenderCopy(Game::renderer, timerText, nullptr, &timerRect);
     }
+    SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(Game::renderer, &barRect);
+    SDL_SetRenderDrawColor(Game::renderer, 255, 255, 255, 255);
     map.render();
     SDL_RenderCopy(Game::renderer, pauseMenuPic, nullptr, &pauseMenuRect);
     SDL_RenderCopy(Game::renderer, backPic, nullptr, &backRect);
@@ -444,6 +446,54 @@ void PlayMenu::render() {
     Ball afterNextBall(Map::ballQueue.back(), 200, 750, 0, 0);
     nextBall.render();
     afterNextBall.render();
+
+
+    if(map.passedTheBar(barRect.y + barRect.h/2)){
+        SDL_RenderPresent(Game::renderer);
+        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", white);
+        SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
+        SDL_RenderPresent(Game::renderer);
+        map.destroy();
+        status = Lost;
+        SDL_Delay(2000);
+        if(!Game::menuQueue.empty())
+            Game::menuQueue.pop_back();
+        EndMenu::init();
+        Game::menuQueue.push_back(End);
+    }
+
+    else if(map.onlyBlackBallsLeft()){
+        SDL_RenderPresent(Game::renderer);
+        if(Game::gameMode == Countdown){
+            Game::score += (int)pow((startingTime - (finalTick-initialTick)), 2) * 10;
+        }
+        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Won!", white);
+        SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
+        SDL_RenderPresent(Game::renderer);
+        map.destroy();
+        status = Won;
+        SDL_Delay(2000);
+        if(!Game::menuQueue.empty())
+            Game::menuQueue.pop_back();
+        EndMenu::init();
+        Game::menuQueue.push_back(End);
+    }
+
+    if(Game::gameMode == Countdown && (finalTick-initialTick)>= startingTime*1000){
+        SDL_RenderPresent(Game::renderer);
+        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", white);
+        SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
+        SDL_RenderPresent(Game::renderer);
+        map.destroy();
+        status = Lost;
+        SDL_Delay(2000);
+        if(!Game::menuQueue.empty())
+            Game::menuQueue.pop_back();
+        EndMenu::init();
+        Game::menuQueue.push_back(End);
+    }
+
+
 }
 
 void PlayMenu::handleEvents(SDL_Event event) {
@@ -480,45 +530,6 @@ void PlayMenu::handleEvents(SDL_Event event) {
 void PlayMenu::update(){
     finalTick = SDL_GetTicks();
     map.update();
-    if(map.passedTheBar(barRect.y + barRect.h/2)){
-        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", white);
-        SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
-        SDL_RenderPresent(Game::renderer);
-        map.destroy();
-        status = Lost;
-        SDL_Delay(2000);
-        if(!Game::menuQueue.empty())
-            Game::menuQueue.pop_back();
-        EndMenu::init();
-        Game::menuQueue.push_back(End);
-    }
-    else if(map.onlyBlackBallsLeft()){
-        if(Game::gameMode == Countdown){
-            Game::score += (int)pow((startingTime - (finalTick-initialTick)), 2) * 10;
-        }
-        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Won!", white);
-        SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
-        SDL_RenderPresent(Game::renderer);
-        map.destroy();
-        status = Won;
-        SDL_Delay(2000);
-        if(!Game::menuQueue.empty())
-            Game::menuQueue.pop_back();
-        EndMenu::init();
-        Game::menuQueue.push_back(End);
-    }
-    if(Game::gameMode == Countdown && (finalTick-initialTick)>= startingTime*1000){
-        textMessage = TextureManager::LoadFont(comicFontPath, 28, "You Lost!", white);
-        SDL_RenderCopy(Game::renderer, textMessage, nullptr, &messageRect);
-        SDL_RenderPresent(Game::renderer);
-        map.destroy();
-        status = Lost;
-        SDL_Delay(2000);
-        if(!Game::menuQueue.empty())
-            Game::menuQueue.pop_back();
-        EndMenu::init();
-        Game::menuQueue.push_back(End);
-    }
 }
 
 void EndMenu::init() {

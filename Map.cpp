@@ -4,7 +4,7 @@
 #include "Map.h"
 #include "Paths.h"
 #include "Game.h"
-#define mapSpeed 0.5
+#define mapSpeed 0.2
 
 std::vector<Ball> Map::fallingBalls;
 std::set<std::pair<int, int>> Map::nonEmptyCells;
@@ -17,6 +17,8 @@ int ind;
 
 void Map::LoadMap() {
     destroy();
+    ceilingHeight = initialY - 10;
+    setRectWithCenter(ceilingRect, 300, ceilingHeight, 600, 5);
     Ball::initPics();
     destructionChunk = Mix_LoadWAV(ballPopChunkPath);
     Cell cell;
@@ -72,6 +74,9 @@ void Map::render() {
         i.render();
     for (auto &i: shootingBall)
         i.render();
+    SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(Game::renderer, &ceilingRect);
+    SDL_SetRenderDrawColor(Game::renderer, 255, 255, 255, 255);
 }
 
 void Map::update() {
@@ -81,6 +86,8 @@ void Map::update() {
     for (auto &i: fallingBalls) {
         i.update(2);
     }
+    ceilingHeight += mapSpeed;
+    ceilingRect.y = ceilingHeight;
     updateShootingBall();
     removeInvisibleBalls();
 }
@@ -280,6 +287,7 @@ void Map::checkBallForPoping(int x, int y) {
             for(int i=0; i<cellNumber; i++){
                 map[i].moveDown(-maxHeight);
             }
+            ceilingHeight += -maxHeight;
         }
     }
     sameColorNeighbors.clear();
@@ -297,7 +305,7 @@ void Map::updateShootingBall() {
         for (auto &i: nonEmptyCells) {
             ind = i.first * 10 + i.second;
             if (shootingBall[0].collisionWithCell(map[ind].x_cent, map[ind].y_cent)) {
-                closestCellIndex = closestEmptyCell(i, shootingBall[0].coordinate());
+                closestCellIndex = closestEmptyCell(i, shootingBall[0].nextCoordinate());
                 if (closestCellIndex != -1)
                     break;
             }
@@ -310,6 +318,26 @@ void Map::updateShootingBall() {
         nonEmptyCells.insert({closestCellIndex / 10, closestCellIndex % 10});
         checkBallForPoping(closestCellIndex / 10, closestCellIndex % 10);
     }
+
+    else{
+        if(!shootingBall.empty()){
+            if(shootingBall[0].passedTheCeiling(ceilingHeight)){
+                for(int i=0; i<10; i++){
+                    if (shootingBall[0].collisionWithCell(map[i].x_cent, map[i].y_cent)) {
+                        closestCellIndex = closestEmptyCell({0, i}, shootingBall[0].nextCoordinate());
+                        if (closestCellIndex != -1)
+                            break;
+                    }
+                }
+            }
+        }
+        if (closestCellIndex != -1) {
+            map[closestCellIndex].addBall(shootingBall[0].color);
+            shootingBall.clear();
+            nonEmptyCells.insert({closestCellIndex / 10, closestCellIndex % 10});
+        }
+    }
+
 }
 
 bool Map::passedTheBar(int yBar) const {

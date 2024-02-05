@@ -139,3 +139,10 @@ void Ball::initPics() {
     popFrame[2] = TextureManager::LoadTexture(popPic3Path);
     lockPic = TextureManager::LoadTexture(lockPicPath);
 }
+
+bool Ball::passedTheCeiling(double ceilingHeight){
+    if(y_cent - 30 - cnst/2 <= ceilingHeight){
+        return true;
+    }
+    return false;
+}

@@ -14,6 +14,8 @@ public:
     void update();
     void destroy();
 
+    SDL_Rect ceilingRect;
+    double ceilingHeight;
     //cell related functions/variables
     std::vector<Cell> map;
     std::vector<int> cellColor;

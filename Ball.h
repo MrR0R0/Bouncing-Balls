@@ -20,8 +20,9 @@ class Ball{
         bool collisionWithCell(double, double);
         bool hitVerticalEdges() const;
         bool outOfScreen() const;
+        bool passedTheCeiling(double ceilingHeight);
 
-        std::pair<double, double> coordinate(){return std::make_pair(x_cent, y_cent);};
+        std::pair<double, double> nextCoordinate(){return std::make_pair(x_cent + vx_cent, y_cent + vy_cent);};
 
         SDL_Rect ballRect;
     private:
